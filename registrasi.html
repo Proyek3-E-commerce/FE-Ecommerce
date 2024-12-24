@@ -61,19 +61,21 @@
                 return response.json(); // Parsing respons JSON dari backend
             })
             .then(data => {
-                if (data.success) {
-                    // Jika registrasi berhasil, arahkan pengguna ke halaman login
-                    alert(data.message); // Tampilkan pesan sukses
-                    window.location.href = './login.html'; // Ganti dengan URL halaman login
+                console.log("Respons dari backend:", data); // Debug respons backend
+                if (data.message === "User registered successfully") {
+                    // Jika registrasi berhasil, tampilkan pesan sukses dan arahkan ke halaman login
+                    alert(data.message); 
+                    window.location.href = './login.html'; // Arahkan ke halaman login
                 } else {
-                    // Tampilkan pesan error jika registrasi gagal
-                    alert(data.message);
+                    // Jika ada pesan lain, tampilkan sebagai error
+                    alert("Registrasi gagal: " + data.message);
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert("Terjadi kesalahan saat memproses registrasi. Coba lagi.");
-            });
+                console.error("Terjadi kesalahan:", error); // Log kesalahan untuk debugging
+                alert("Terjadi kesalahan saat registrasi. Silakan coba lagi.");
+            });            
+            
         }
     </script>
     
