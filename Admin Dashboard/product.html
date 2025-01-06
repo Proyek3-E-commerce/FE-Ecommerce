@@ -120,7 +120,7 @@
               const newRow = productTable.insertRow();
               newRow.innerHTML = ` 
                   <td>${name}</td>
-                  <td>${price}</td>
+                    <td>${formatCurrency(price)}</td>
                   <td>${category}</td>
                   <td>
                       <button class="edit">Edit</button>
