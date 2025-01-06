@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
    <div class="container">
       <aside>
          <div class="top">
@@ -21,11 +20,11 @@
            </div>
          </div>
          <div class="sidebar">
-            <a href="#" id="nav-dashboard">
+            <a href="index.html" id="nav-dashboard">
               <span class="material-symbols-sharp">grid_view</span>
               <h3>Dashboard</h3>
            </a>
-           <a href="#" id="nav-customers" class="active">
+           <a href="customers.html" id="nav-customers" class="active">
             <span class="material-symbols-sharp">person_outline</span>
             <h3>Customers</h3>
           </a>
@@ -62,9 +61,9 @@
                  <button type="submit">Add Customer</button>
               </form>
            </div>
-           <div class="recent_order">
+           <div class="customer-list">
               <h2>Customer List</h2>
-              <table id="customer-table"> 
+              <table id="customer-table">
                   <thead>
                    <tr>
                      <th>Name</th>
@@ -94,17 +93,19 @@
                    <p>Admin</p>
                </div>
                <div class="profile-photo">
-                 <img src="./images/profile.jpeg" alt="">
+                 <img src="./images/profile.jpeg" alt="Profile">
                </div>
             </div>
         </div>
       </div>
    </div>
+
    <script>
-      // Simple CRUD logic
       const customerForm = document.getElementById('customer-form');
       const customerTable = document.getElementById('customer-table').getElementsByTagName('tbody')[0];
+      let editingRow = null;
 
+      // Handle form submission to add or update customer
       customerForm.addEventListener('submit', function(e) {
           e.preventDefault();
 
@@ -112,63 +113,68 @@
           const email = document.getElementById('customer-email').value;
           const phone = document.getElementById('customer-phone').value;
 
-          const newRow = customerTable.insertRow();
+          if (editingRow) {
+              // Update the existing row
+              editingRow.cells[0].innerText = name;
+              editingRow.cells[1].innerText = email;
+              editingRow.cells[2].innerText = phone;
 
-          newRow.innerHTML = `
-              <td>${name}</td>
-              <td>${email}</td>
-              <td>${phone}</td>
-              <td>
-                  <button class="edit">Edit</button>
-                  <button class="delete">Delete</button>
-              </td>
-          `;
+              // Reset editing mode
+              editingRow = null;
+              customerForm.reset();
+              document.querySelector('button').innerText = 'Add Customer';
+          } else {
+              // Create new row
+              const newRow = customerTable.insertRow();
+              newRow.innerHTML = `
+                  <td>${name}</td>
+                  <td>${email}</td>
+                  <td>${phone}</td>
+                  <td>
+                      <button class="edit">Edit</button>
+                      <button class="delete">Delete</button>
+                  </td>
+              `;
 
-          document.getElementById('customer-name').value = '';
-          document.getElementById('customer-email').value = '';
-          document.getElementById('customer-phone').value = '';
-
-          addEventListeners(newRow);
+              addEventListeners(newRow);
+              customerForm.reset();
+          }
       });
 
+      // Add event listeners to edit and delete buttons
       function addEventListeners(row) {
           const editBtn = row.querySelector('.edit');
           const deleteBtn = row.querySelector('.delete');
 
+          // Edit functionality
           editBtn.addEventListener('click', function() {
               const cells = row.getElementsByTagName('td');
               document.getElementById('customer-name').value = cells[0].innerText;
               document.getElementById('customer-email').value = cells[1].innerText;
               document.getElementById('customer-phone').value = cells[2].innerText;
-              row.remove();
+
+              // Set the row being edited
+              editingRow = row;
+              document.querySelector('button').innerText = 'Update Customer';
           });
 
+          // Delete functionality
           deleteBtn.addEventListener('click', function() {
               row.remove();
           });
       }
 
       // Navigation functionality
-      const content = document.getElementById('content');
-
       document.getElementById('nav-dashboard').addEventListener('click', function(e) {
           e.preventDefault();
           localStorage.setItem('lastView', 'dashboard');
-          window.location.href = 'index.html';
+          window.location.href = 'index.html'; // Redirect to dashboard
       });
 
       document.getElementById('nav-customers').addEventListener('click', function(e) {
           e.preventDefault();
           localStorage.setItem('lastView', 'customers');
-          content.scrollIntoView({ behavior: 'smooth' });
-      });
-
-      // Maintain navigation state
-      document.addEventListener('DOMContentLoaded', function() {
-          const lastView = localStorage.getItem('lastView');
-          if (lastView === 'customers') {
-              document.getElementById('nav-customers').click();
-          }
+          window.location.href = 'customers.html'; // Stay on customers page
       });
    </script>
 </body>

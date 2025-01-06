@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
    <div class="container">
       <aside>
          <div class="top">
@@ -21,43 +20,33 @@
            </div>
          </div>
          <div class="sidebar">
-            <a href="#dashboard" >
+            <a href="/Admin Dashboard/index.html" id="nav-dashboard" class="active">
               <span class="material-symbols-sharp">grid_view</span>
               <h3>Dashboard</h3>
            </a>
-           <a href="/Admin Dashboard/customers.html">
+           <a href="/Admin Dashboard/customers.html" id="nav-customers"> 
             <span class="material-symbols-sharp">person_outline</span>
             <h3>Customers</h3>
           </a>
-          
-           <a href="#sellers">
+           <a href="#sellers" id="nav-sellers">
               <span class="material-symbols-sharp">storefront</span>
               <h3>Sellers</h3>
            </a>
-           <a href="#products">
+           <a href="#products" id="nav-products">
               <span class="material-symbols-sharp">receipt_long</span>
               <h3>Products</h3>
            </a>
-           <!-- <a href="#reports">
-              <span class="material-symbols-sharp">report_gmailerrorred</span>
-              <h3>Reports</h3>
-           </a> -->
-           <!-- <a href="#settings">
-              <span class="material-symbols-sharp">settings</span>
-              <h3>Settings</h3>
-           </a> -->
-           <a href="#add-product">
+           <a href="#add-product" id="nav-add-product">
               <span class="material-symbols-sharp">add</span>
               <h3>Add Product</h3>
            </a>
-           <a href="#logout">
+           <a href="#logout" id="nav-logout">
               <span class="material-symbols-sharp">logout</span>
               <h3>Logout</h3>
            </a>
-         
          </div>
       </aside>
-      <main>
+      <main id="dashboard-content">
            <h1>Dashboard</h1>
            <div class="date">
              <input type="date">
@@ -143,6 +132,37 @@
          <a href="#">Show All</a>
       </div>
       </main>
+
+      <main id="customers-content" style="display: none;">
+        <h1>Customers</h1>
+        <div class="customers-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Customer Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>John Doe</td>
+                <td>john.doe@example.com</td>
+                <td>+62 8123456789</td>
+                <td class="success">Active</td>
+              </tr>
+              <tr>
+                <td>Jane Smith</td>
+                <td>jane.smith@example.com</td>
+                <td>+62 8112233445</td>
+                <td class="warning">Pending</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+
       <div class="right">
         <div class="top">
            <button id="menu_bar">
@@ -158,12 +178,24 @@
                    <p>Admin</p>
                </div>
                <div class="profile-photo">
-                 <img src="./images/profile.jpeg" alt="">
+                 <img src="./images/profile.jpeg" alt="Profile">
                </div>
             </div>
         </div>
       </div>
    </div>
    <script src="script.js"></script>
+   <script>
+      // Switch sections based on navbar clicks
+      document.getElementById('nav-dashboard').addEventListener('click', function() {
+        document.getElementById('dashboard-content').style.display = 'block';
+        document.getElementById('customers-content').style.display = 'none';
+      });
+
+      document.getElementById('nav-customers').addEventListener('click', function() {
+        document.getElementById('dashboard-content').style.display = 'none';
+        document.getElementById('customers-content').style.display = 'block';
+      });
+   </script>
 </body>
 </html>
