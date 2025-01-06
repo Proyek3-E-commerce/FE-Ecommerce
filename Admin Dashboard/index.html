@@ -32,13 +32,9 @@
               <span class="material-symbols-sharp">storefront</span>
               <h3>Sellers</h3>
            </a>
-           <a href="#products">
+           <a href="#products" id="nav-products">
               <span class="material-symbols-sharp">receipt_long</span>
               <h3>Products</h3>
-           </a>
-           <a href="#add-product">
-              <span class="material-symbols-sharp">add</span>
-              <h3>Add Product</h3>
            </a>
            <a href="#logout">
               <span class="material-symbols-sharp">logout</span>
@@ -149,6 +145,36 @@
            </div>
       </main>
 
+      <!-- Products Section -->
+      <main id="products-content" style="display: none;">
+        <h1>Products</h1>
+        <div class="add-product">
+              <h2>Add New Product</h2>
+              <form id="product-form">
+                 <input type="text" id="product-name" placeholder="Product Name" required>
+                 <input type="number" id="product-price" placeholder="Product Price" required>
+                 <input type="text" id="product-category" placeholder="Product Category" required>
+                 <button type="submit">Add Product</button>
+              </form>
+           </div>
+           <div class="product-list">
+              <h2>Product List</h2>
+              <table id="product-table">
+                  <thead>
+                   <tr>
+                     <th>Name</th>
+                     <th>Price</th>
+                     <th>Category</th>
+                     <th>Actions</th>
+                   </tr>
+                  </thead>
+                   <tbody>
+                      <!-- Product rows will be dynamically inserted here -->
+                   </tbody>
+              </table>
+           </div>
+      </main>
+
       <div class="right">
         <div class="top">
            <button id="menu_bar">
@@ -178,18 +204,28 @@
         document.getElementById('dashboard-content').style.display = 'block';
         document.getElementById('customers-content').style.display = 'none';
         document.getElementById('sellers-content').style.display = 'none';
+        document.getElementById('products-content').style.display = 'none';
       });
 
       document.getElementById('nav-customers').addEventListener('click', function() {
         document.getElementById('dashboard-content').style.display = 'none';
         document.getElementById('customers-content').style.display = 'block';
         document.getElementById('sellers-content').style.display = 'none';
+        document.getElementById('products-content').style.display = 'none';
       });
 
       document.getElementById('nav-sellers').addEventListener('click', function() {
         document.getElementById('dashboard-content').style.display = 'none';
         document.getElementById('customers-content').style.display = 'none';
         document.getElementById('sellers-content').style.display = 'block';
+        document.getElementById('products-content').style.display = 'none';
+      });
+
+      document.getElementById('nav-products').addEventListener('click', function() {
+        document.getElementById('dashboard-content').style.display = 'none';
+        document.getElementById('customers-content').style.display = 'none';
+        document.getElementById('sellers-content').style.display = 'none';
+        document.getElementById('products-content').style.display = 'block';
       });
    </script>
 </body>
