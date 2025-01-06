@@ -24,17 +24,13 @@
               <span class="material-symbols-sharp">grid_view</span>
               <h3>Dashboard</h3>
            </a>
-           <a href="#" id="nav-customers">
+           <a href="#customers" id="nav-customers">
             <span class="material-symbols-sharp">person_outline</span>
             <h3>Customers</h3>
-          </a>
-           <a href="#sellers">
+           </a>
+           <a href="#sellers" id="nav-sellers">
               <span class="material-symbols-sharp">storefront</span>
               <h3>Sellers</h3>
-           </a>
-           <a href="#analytics">
-              <span class="material-symbols-sharp">insights</span>
-              <h3>Analytics</h3>
            </a>
            <a href="#products">
               <span class="material-symbols-sharp">receipt_long</span>
@@ -93,7 +89,7 @@
         </div>
       </main>
 
-      <!-- Customers Section (Will be shown on navbar click) -->
+      <!-- Customers Section -->
       <main id="customers-content" style="display: none;">
         <h1>Customers</h1>
         <div class="add-customer">
@@ -118,6 +114,36 @@
                   </thead>
                    <tbody>
                       <!-- Customer rows will be dynamically inserted here -->
+                   </tbody>
+              </table>
+           </div>
+      </main>
+
+      <!-- Sellers Section -->
+      <main id="sellers-content" style="display: none;">
+        <h1>Sellers</h1>
+        <div class="add-seller">
+              <h2>Add New Seller</h2>
+              <form id="seller-form">
+                 <input type="text" id="seller-name" placeholder="Seller Name" required>
+                 <input type="email" id="seller-email" placeholder="Seller Email" required>
+                 <input type="text" id="seller-phone" placeholder="Seller Phone" required>
+                 <button type="submit">Add Seller</button>
+              </form>
+           </div>
+           <div class="seller-list">
+              <h2>Seller List</h2>
+              <table id="seller-table">
+                  <thead>
+                   <tr>
+                     <th>Name</th>
+                     <th>Email</th>
+                     <th>Phone</th>
+                     <th>Actions</th>
+                   </tr>
+                  </thead>
+                   <tbody>
+                      <!-- Seller rows will be dynamically inserted here -->
                    </tbody>
               </table>
            </div>
@@ -151,11 +177,19 @@
       document.getElementById('nav-dashboard').addEventListener('click', function() {
         document.getElementById('dashboard-content').style.display = 'block';
         document.getElementById('customers-content').style.display = 'none';
+        document.getElementById('sellers-content').style.display = 'none';
       });
 
       document.getElementById('nav-customers').addEventListener('click', function() {
         document.getElementById('dashboard-content').style.display = 'none';
         document.getElementById('customers-content').style.display = 'block';
+        document.getElementById('sellers-content').style.display = 'none';
+      });
+
+      document.getElementById('nav-sellers').addEventListener('click', function() {
+        document.getElementById('dashboard-content').style.display = 'none';
+        document.getElementById('customers-content').style.display = 'none';
+        document.getElementById('sellers-content').style.display = 'block';
       });
    </script>
 </body>
