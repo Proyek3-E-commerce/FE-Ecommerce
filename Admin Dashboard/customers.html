@@ -21,11 +21,11 @@
            </div>
          </div>
          <div class="sidebar">
-            <a href="index.html">
+            <a href="#" id="nav-dashboard">
               <span class="material-symbols-sharp">grid_view</span>
               <h3>Dashboard</h3>
            </a>
-           <a href="#" class="active">
+           <a href="#" id="nav-customers" class="active">
             <span class="material-symbols-sharp">person_outline</span>
             <h3>Customers</h3>
           </a>
@@ -51,7 +51,7 @@
            </a>
          </div>
       </aside>
-      <main>
+      <main id="content">
            <h1>Customers</h1>
            <div class="add-customer">
               <h2>Add New Customer</h2>
@@ -147,6 +147,29 @@
               row.remove();
           });
       }
+
+      // Navigation functionality
+      const content = document.getElementById('content');
+
+      document.getElementById('nav-dashboard').addEventListener('click', function(e) {
+          e.preventDefault();
+          localStorage.setItem('lastView', 'dashboard');
+          window.location.href = 'index.html';
+      });
+
+      document.getElementById('nav-customers').addEventListener('click', function(e) {
+          e.preventDefault();
+          localStorage.setItem('lastView', 'customers');
+          content.scrollIntoView({ behavior: 'smooth' });
+      });
+
+      // Maintain navigation state
+      document.addEventListener('DOMContentLoaded', function() {
+          const lastView = localStorage.getItem('lastView');
+          if (lastView === 'customers') {
+              document.getElementById('nav-customers').click();
+          }
+      });
    </script>
 </body>
 </html>
