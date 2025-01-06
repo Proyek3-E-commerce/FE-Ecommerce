@@ -136,6 +136,7 @@
                   </td>
               `;
 
+              // Add event listeners for editing and deleting
               addEventListeners(newRow);
               customerForm.reset();
           }
@@ -163,19 +164,6 @@
               row.remove();
           });
       }
-
-      // Navigation functionality
-      document.getElementById('nav-dashboard').addEventListener('click', function(e) {
-          e.preventDefault();
-          localStorage.setItem('lastView', 'dashboard');
-          window.location.href = 'index.html'; // Redirect to dashboard
-      });
-
-      document.getElementById('nav-customers').addEventListener('click', function(e) {
-          e.preventDefault();
-          localStorage.setItem('lastView', 'customers');
-          window.location.href = 'customers.html'; // Stay on customers page
-      });
    </script>
 </body>
 </html>

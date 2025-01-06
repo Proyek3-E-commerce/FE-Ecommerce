@@ -20,32 +20,38 @@
            </div>
          </div>
          <div class="sidebar">
-            <a href="/Admin Dashboard/index.html" id="nav-dashboard" class="active">
+            <a href="#" id="nav-dashboard" class="active">
               <span class="material-symbols-sharp">grid_view</span>
               <h3>Dashboard</h3>
            </a>
-           <a href="/Admin Dashboard/customers.html" id="nav-customers"> 
+           <a href="#" id="nav-customers">
             <span class="material-symbols-sharp">person_outline</span>
             <h3>Customers</h3>
           </a>
-           <a href="#sellers" id="nav-sellers">
+           <a href="#sellers">
               <span class="material-symbols-sharp">storefront</span>
               <h3>Sellers</h3>
            </a>
-           <a href="#products" id="nav-products">
+           <a href="#analytics">
+              <span class="material-symbols-sharp">insights</span>
+              <h3>Analytics</h3>
+           </a>
+           <a href="#products">
               <span class="material-symbols-sharp">receipt_long</span>
               <h3>Products</h3>
            </a>
-           <a href="#add-product" id="nav-add-product">
+           <a href="#add-product">
               <span class="material-symbols-sharp">add</span>
               <h3>Add Product</h3>
            </a>
-           <a href="#logout" id="nav-logout">
+           <a href="#logout">
               <span class="material-symbols-sharp">logout</span>
               <h3>Logout</h3>
            </a>
          </div>
       </aside>
+
+      <!-- Main Dashboard Content -->
       <main id="dashboard-content">
            <h1>Dashboard</h1>
            <div class="date">
@@ -84,83 +90,37 @@
                 </div>
                 <small>Last 24 Hours</small>
              </div>
-               <div class="income">
-                <span class="material-symbols-sharp">stacked_line_chart</span>
-                <div class="middle">
-                  <div class="left">
-                    <h3>Total Income</h3>
-                    <h1>Rp 10,024,000</h1>
-                  </div>
-                   <div class="progress">
-                       <svg>
-                          <circle r="30" cy="40" cx="40"></circle>
-                       </svg>
-                       <div class="number"><p>40%</p></div>
-                   </div>
-                </div>
-                <small>Last 24 Hours</small>
-             </div>
         </div>
-      <div class="recent_order">
-         <h2>Recent Orders</h2>
-         <table> 
-             <thead>
-              <tr>
-                <th>Product Name</th>
-                <th>Product Number</th>
-                <th>Payments</th>
-                <th>Status</th>
-              </tr>
-             </thead>
-              <tbody>
-                 <tr>
-                   <td>Mini USB</td>
-                   <td>4563</td>
-                   <td>Rp 50,000</td>
-                   <td class="warning">Pending</td>
-                   <td class="primary">Details</td>
-                 </tr>
-                 <tr>
-                  <td>Bluetooth Speaker</td>
-                  <td>7890</td>
-                  <td>Rp 200,000</td>
-                  <td class="success">Completed</td>
-                  <td class="primary">Details</td>
-                </tr>
-              </tbody>
-         </table>
-         <a href="#">Show All</a>
-      </div>
       </main>
 
+      <!-- Customers Section (Will be shown on navbar click) -->
       <main id="customers-content" style="display: none;">
         <h1>Customers</h1>
-        <div class="customers-table">
-          <table>
-            <thead>
-              <tr>
-                <th>Customer Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>John Doe</td>
-                <td>john.doe@example.com</td>
-                <td>+62 8123456789</td>
-                <td class="success">Active</td>
-              </tr>
-              <tr>
-                <td>Jane Smith</td>
-                <td>jane.smith@example.com</td>
-                <td>+62 8112233445</td>
-                <td class="warning">Pending</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <div class="add-customer">
+              <h2>Add New Customer</h2>
+              <form id="customer-form">
+                 <input type="text" id="customer-name" placeholder="Customer Name" required>
+                 <input type="email" id="customer-email" placeholder="Customer Email" required>
+                 <input type="text" id="customer-phone" placeholder="Customer Phone" required>
+                 <button type="submit">Add Customer</button>
+              </form>
+           </div>
+           <div class="customer-list">
+              <h2>Customer List</h2>
+              <table id="customer-table">
+                  <thead>
+                   <tr>
+                     <th>Name</th>
+                     <th>Email</th>
+                     <th>Phone</th>
+                     <th>Actions</th>
+                   </tr>
+                  </thead>
+                   <tbody>
+                      <!-- Customer rows will be dynamically inserted here -->
+                   </tbody>
+              </table>
+           </div>
       </main>
 
       <div class="right">
@@ -184,6 +144,7 @@
         </div>
       </div>
    </div>
+
    <script src="script.js"></script>
    <script>
       // Switch sections based on navbar clicks
