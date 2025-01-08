@@ -9,7 +9,6 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
    <div class="container">
       <aside>
          <div class="top">
@@ -21,52 +20,31 @@
            </div>
          </div>
          <div class="sidebar">
-            <a href="#dashboard" >
+            <a href="#" id="nav-dashboard" class="active">
               <span class="material-symbols-sharp">grid_view</span>
               <h3>Dashboard</h3>
            </a>
-           <a href="customers.html">
+           <a href="#customers" id="nav-customers">
             <span class="material-symbols-sharp">person_outline</span>
             <h3>Customers</h3>
-          </a>
-          
-           <a href="#sellers">
+           </a>
+           <a href="#sellers" id="nav-sellers">
               <span class="material-symbols-sharp">storefront</span>
               <h3>Sellers</h3>
            </a>
-           <a href="#analytics">
-              <span class="material-symbols-sharp">insights</span>
-              <h3>Analytics</h3>
-           </a>
-           <!-- <a href="#messages">
-              <span class="material-symbols-sharp">mail_outline</span>
-              <h3>Messages</h3>
-              <span class="msg_count">14</span>
-           </a> -->
-           <a href="#products">
+           <a href="#products" id="nav-products">
               <span class="material-symbols-sharp">receipt_long</span>
               <h3>Products</h3>
-           </a>
-           <!-- <a href="#reports">
-              <span class="material-symbols-sharp">report_gmailerrorred</span>
-              <h3>Reports</h3>
-           </a> -->
-           <!-- <a href="#settings">
-              <span class="material-symbols-sharp">settings</span>
-              <h3>Settings</h3>
-           </a> -->
-           <a href="#add-product">
-              <span class="material-symbols-sharp">add</span>
-              <h3>Add Product</h3>
            </a>
            <a href="#logout">
               <span class="material-symbols-sharp">logout</span>
               <h3>Logout</h3>
            </a>
-         
          </div>
       </aside>
-      <main>
+
+      <!-- Main Dashboard Content -->
+      <main id="dashboard-content">
            <h1>Dashboard</h1>
            <div class="date">
              <input type="date">
@@ -104,54 +82,99 @@
                 </div>
                 <small>Last 24 Hours</small>
              </div>
-               <div class="income">
-                <span class="material-symbols-sharp">stacked_line_chart</span>
-                <div class="middle">
-                  <div class="left">
-                    <h3>Total Income</h3>
-                    <h1>Rp 10,024,000</h1>
-                  </div>
-                   <div class="progress">
-                       <svg>
-                          <circle r="30" cy="40" cx="40"></circle>
-                       </svg>
-                       <div class="number"><p>40%</p></div>
-                   </div>
-                </div>
-                <small>Last 24 Hours</small>
-             </div>
         </div>
-      <div class="recent_order">
-         <h2>Recent Orders</h2>
-         <table> 
-             <thead>
-              <tr>
-                <th>Product Name</th>
-                <th>Product Number</th>
-                <th>Payments</th>
-                <th>Status</th>
-              </tr>
-             </thead>
-              <tbody>
-                 <tr>
-                   <td>Mini USB</td>
-                   <td>4563</td>
-                   <td>Rp 50,000</td>
-                   <td class="warning">Pending</td>
-                   <td class="primary">Details</td>
-                 </tr>
-                 <tr>
-                  <td>Bluetooth Speaker</td>
-                  <td>7890</td>
-                  <td>Rp 200,000</td>
-                  <td class="success">Completed</td>
-                  <td class="primary">Details</td>
-                </tr>
-              </tbody>
-         </table>
-         <a href="#">Show All</a>
-      </div>
       </main>
+
+      <!-- Customers Section -->
+      <main id="customers-content" style="display: none;">
+        <h1>Customers</h1>
+        <div class="add-customer">
+              <h2>Add New Customer</h2>
+              <form id="customer-form">
+                 <input type="text" id="customer-name" placeholder="Customer Name" required>
+                 <input type="email" id="customer-email" placeholder="Customer Email" required>
+                 <input type="text" id="customer-phone" placeholder="Customer Phone" required>
+                 <button type="submit">Add Customer</button>
+              </form>
+           </div>
+           <div class="customer-list">
+              <h2>Customer List</h2>
+              <table id="customer-table">
+                  <thead>
+                   <tr>
+                     <th>Name</th>
+                     <th>Email</th>
+                     <th>Phone</th>
+                     <th>Actions</th>
+                   </tr>
+                  </thead>
+                   <tbody>
+                      <!-- Customer rows will be dynamically inserted here -->
+                   </tbody>
+              </table>
+           </div>
+      </main>
+
+      <!-- Sellers Section -->
+      <main id="sellers-content" style="display: none;">
+        <h1>Sellers</h1>
+        <div class="add-seller">
+              <h2>Add New Seller</h2>
+              <form id="seller-form">
+                 <input type="text" id="seller-name" placeholder="Seller Name" required>
+                 <input type="email" id="seller-email" placeholder="Seller Email" required>
+                 <input type="text" id="seller-phone" placeholder="Seller Phone" required>
+                 <button type="submit">Add Seller</button>
+              </form>
+           </div>
+           <div class="seller-list">
+              <h2>Seller List</h2>
+              <table id="seller-table">
+                  <thead>
+                   <tr>
+                     <th>Name</th>
+                     <th>Email</th>
+                     <th>Phone</th>
+                     <th>Actions</th>
+                   </tr>
+                  </thead>
+                   <tbody>
+                      <!-- Seller rows will be dynamically inserted here -->
+                   </tbody>
+              </table>
+           </div>
+      </main>
+
+      <!-- Products Section -->
+      <main id="products-content" style="display: none;">
+        <h1>Products</h1>
+        <div class="add-product">
+              <h2>Add New Product</h2>
+              <form id="product-form">
+                 <input type="text" id="product-name" placeholder="Product Name" required>
+                 <input type="number" id="product-price" placeholder="Product Price" required>
+                 <input type="text" id="product-category" placeholder="Product Category" required>
+                 <button type="submit">Add Product</button>
+              </form>
+           </div>
+           <div class="product-list">
+              <h2>Product List</h2>
+              <table id="product-table">
+                  <thead>
+                   <tr>
+                     <th>Name</th>
+                     <th>Price</th>
+                     <th>Category</th>
+                     <th>Actions</th>
+                   </tr>
+                  </thead>
+                   <tbody>
+                      <!-- Product rows will be dynamically inserted here -->
+                   </tbody>
+              </table>
+           </div>
+      </main>
+
       <div class="right">
         <div class="top">
            <button id="menu_bar">
@@ -167,12 +190,43 @@
                    <p>Admin</p>
                </div>
                <div class="profile-photo">
-                 <img src="./images/profile.jpeg" alt="">
+                 <img src="./images/profile.jpeg" alt="Profile">
                </div>
             </div>
         </div>
       </div>
    </div>
+
    <script src="script.js"></script>
+   <script>
+      // Switch sections based on navbar clicks
+      document.getElementById('nav-dashboard').addEventListener('click', function() {
+        document.getElementById('dashboard-content').style.display = 'block';
+        document.getElementById('customers-content').style.display = 'none';
+        document.getElementById('sellers-content').style.display = 'none';
+        document.getElementById('products-content').style.display = 'none';
+      });
+
+      document.getElementById('nav-customers').addEventListener('click', function() {
+        document.getElementById('dashboard-content').style.display = 'none';
+        document.getElementById('customers-content').style.display = 'block';
+        document.getElementById('sellers-content').style.display = 'none';
+        document.getElementById('products-content').style.display = 'none';
+      });
+
+      document.getElementById('nav-sellers').addEventListener('click', function() {
+        document.getElementById('dashboard-content').style.display = 'none';
+        document.getElementById('customers-content').style.display = 'none';
+        document.getElementById('sellers-content').style.display = 'block';
+        document.getElementById('products-content').style.display = 'none';
+      });
+
+      document.getElementById('nav-products').addEventListener('click', function() {
+        document.getElementById('dashboard-content').style.display = 'none';
+        document.getElementById('customers-content').style.display = 'none';
+        document.getElementById('sellers-content').style.display = 'none';
+        document.getElementById('products-content').style.display = 'block';
+      });
+   </script>
 </body>
 </html>
