@@ -204,5 +204,63 @@
     </footer>
 
     <script src="./assets/js/script.js" defer></script>
+    <script>document.addEventListener("DOMContentLoaded", function () {
+      const productList = document.querySelector(".product-list");
+    
+      // Ganti URL ini dengan endpoint backend kamu
+      const API_URL = "http://localhost:3000/products/best-sellers";
+    
+      async function fetchBestSellers() {
+        try {
+          const response = await fetch(API_URL, {
+            method: "GET",
+            headers: {
+              Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU5MDA5NjgsInVzZXJfaWQiOiI2NzY0ZjBkMDk0OWNkNmY5ZjhmNjcyYjUifQ.DTZpkPnPLS1VwU1_7pZ1gtfSNUn9x8boUKdgsEktXQM", // Ganti dengan token JWT yang valid
+            },
+          });
+    
+          if (!response.ok) {
+            throw new Error("Failed to fetch products");
+          }
+    
+          const data = await response.json();
+    
+          // Pastikan data memiliki array produk
+          if (data.status === "success" && Array.isArray(data.data)) {
+            displayProducts(data.data);
+          } else {
+            throw new Error("Invalid data structure");
+          }
+        } catch (error) {
+          console.error("Error fetching products:", error.message);
+        }
+      }
+    
+      function displayProducts(products) {
+        productList.innerHTML = ""; // Kosongkan daftar produk
+    
+        products.forEach((product) => {
+          const productCard = `
+            <li class="product-item">
+              <div class="product-card">
+                <img
+                  src="${product.image || './assets/images/default-product.jpg'}"
+                  alt="${product.name}"
+                  class="product-image"
+                />
+                <h2 class="product-title">${product.name}</h2>
+                <p class="product-price">Rp.${product.price.toLocaleString()}</p>
+                <button class="btn">Add to Cart</button>
+              </div>
+            </li>
+          `;
+          productList.insertAdjacentHTML("beforeend", productCard);
+        });
+      }
+    
+      // Panggil fungsi untuk fetch data
+      fetchBestSellers();
+    });
+    </script>
   </body>
 </html>
