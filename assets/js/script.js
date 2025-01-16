@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 // Fungsi-fungsi yang sudah ada tetap dipertahankan
 
@@ -6,14 +6,27 @@
  * add event on element
  */
 const addEventOnElem = function (elem, type, callback) {
+  if (!elem) {
+    console.error("Element is null or undefined.");
+    return;
+  }
+
   if (elem.length > 1) {
     for (let i = 0; i < elem.length; i++) {
-      elem[i].addEventListener(type, callback);
+      if (elem[i].addEventListener) {
+        elem[i].addEventListener(type, callback);
+      } else {
+        console.error("Element does not support addEventListener:", elem[i]);
+      }
     }
   } else {
-    elem.addEventListener(type, callback);
+    if (elem.addEventListener) {
+      elem.addEventListener(type, callback);
+    } else {
+      console.error("Element does not support addEventListener:", elem);
+    }
   }
-}
+};
 
 /**
  * navbar toggle
@@ -26,14 +39,14 @@ const overlay = document.querySelector("[data-overlay]");
 const toggleNavbar = function () {
   navbar.classList.toggle("active");
   overlay.classList.toggle("active");
-}
+};
 
 addEventOnElem(navTogglers, "click", toggleNavbar);
 
 const closeNavbar = function () {
   navbar.classList.remove("active");
   overlay.classList.remove("active");
-}
+};
 
 addEventOnElem(navbarLinks, "click", closeNavbar);
 
@@ -51,7 +64,7 @@ const headerActive = function () {
     header.classList.remove("active");
     backTopBtn.classList.remove("active");
   }
-}
+};
 
 addEventOnElem(window, "scroll", headerActive);
 
@@ -65,7 +78,7 @@ const headerSticky = function () {
   }
 
   lastScrolledPos = window.scrollY;
-}
+};
 
 addEventOnElem(window, "scroll", headerSticky);
 
@@ -80,31 +93,67 @@ const scrollReveal = function () {
       sections[i].classList.add("active");
     }
   }
-}
+};
 
 scrollReveal();
 
 addEventOnElem(window, "scroll", scrollReveal);
 
 /**
- * Login validation
+ * Login validation and redirection based on role
  */
-const validateLogin = function (event) {
-  event.preventDefault();
+function validateLogin(event) {
+  event.preventDefault(); // Mencegah refresh halaman
 
+  // Ambil nilai input dari form
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
   if (!email || !password) {
-    alert("All fields are required!");
-    return false;
+    alert("Email dan password harus diisi!");
+    return;
   }
 
-  // Simulasi login berhasil
-  alert("Login successful!");
-  window.location.href = "index.html"; // Redirect ke halaman utama
-}
+  // Kirim permintaan login
+  fetch("http://localhost:3000/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  })
+    .then((response) => {
+      console.log("Response status:", response.status); // Debug respons
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json(); // Parsing respons JSON
+    })
+    .then((data) => {
+      console.log("Respons dari backend:", data); // Debug data
 
+      if (data.status === "success") {
+        localStorage.setItem("token", data.token); // Simpan token di localStorage
+
+        // Redirect berdasarkan role
+        if (data.role === "admin") {
+          window.location.href = "admin-dashboard/index.html";
+        } else if (data.role === "seller") {
+          window.location.href = "penjual-dashboard/index.html";
+        } else {
+          window.location.href = "index.html";
+        }
+      } else {
+        alert("Login gagal: " + data.message);
+      }
+    })
+    .catch((error) => {
+      console.error("Terjadi kesalahan:", error); // Debug error
+      alert("Login gagal. Silakan coba lagi.");
+    });
+  console.log("Email:", email);
+  console.log("Password:", password);
+}
 
 /**
  * Registration validation
@@ -124,7 +173,7 @@ const validateRegistration = function (event) {
   // Simulasi registrasi berhasil
   alert("Registration successful!");
   window.location.href = "login.html"; // Redirect ke halaman login
-}
+};
 
 // Tambahkan event listener hanya pada halaman login atau registrasi
 const loginForm = document.getElementById("loginForm");
@@ -139,54 +188,66 @@ if (registerForm) {
 
 document.addEventListener("DOMContentLoaded", function () {
   // Tambahkan event listener ke setiap tombol wishlist
-  const favoriteButtons = document.querySelectorAll('[aria-label="add to whishlist"]');
+  const favoriteButtons = document.querySelectorAll(
+    '[aria-label="add to whishlist"]'
+  );
 
   favoriteButtons.forEach((button) => {
-      button.addEventListener("click", function () {
-          const productCard = this.closest(".shop-card");
-          if (!productCard) return; // Jika productCard tidak ditemukan, keluar dari fungsi
+    button.addEventListener("click", function () {
+      const productCard = this.closest(".shop-card");
+      if (!productCard) return; // Jika productCard tidak ditemukan, keluar dari fungsi
 
-          // Ambil detail produk
-          const product = {
-              id: productCard.dataset.id || new Date().getTime(), // Tambahkan ID unik (jika ada)
-              image: productCard.querySelector(".img-cover")?.src || "",
-              name: productCard.querySelector(".card-title")?.innerText || "Produk Tidak Diketahui",
-              price: productCard.querySelector(".span")?.innerText || "Rp.0",
-          };
+      // Ambil detail produk
+      const product = {
+        id: productCard.dataset.id || new Date().getTime(), // Tambahkan ID unik (jika ada)
+        image: productCard.querySelector(".img-cover")?.src || "",
+        name:
+          productCard.querySelector(".card-title")?.innerText ||
+          "Produk Tidak Diketahui",
+        price: productCard.querySelector(".span")?.innerText || "Rp.0",
+      };
 
-          // Ambil data favorit yang sudah ada
-          let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
+      // Ambil data favorit yang sudah ada
+      let favorites = JSON.parse(localStorage.getItem("favorites")) || [];
 
-          // Cek apakah produk sudah ada di daftar favorit
-          const isDuplicate = favorites.some((item) => item.name === product.name);
-          if (!isDuplicate) {
-              favorites.push(product);
-              localStorage.setItem("favorites", JSON.stringify(favorites));
-              alert("Produk ditambahkan ke favorit!");
-          } else {
-              alert("Produk sudah ada di favorit!");
-          }
-      });
+      // Cek apakah produk sudah ada di daftar favorit
+      const isDuplicate = favorites.some((item) => item.name === product.name);
+      if (!isDuplicate) {
+        favorites.push(product);
+        localStorage.setItem("favorites", JSON.stringify(favorites));
+        alert("Produk ditambahkan ke favorit!");
+      } else {
+        alert("Produk sudah ada di favorit!");
+      }
+    });
   });
 
   // Redirect ke halaman favorit
   const favoriteBtn = document.getElementById("favorite-btn");
   if (favoriteBtn) {
-      favoriteBtn.addEventListener("click", function () {
-          window.location.href = "fav.html";
-      });
+    favoriteBtn.addEventListener("click", function () {
+      window.location.href = "fav.html";
+    });
   }
 });
 
 document.addEventListener("DOMContentLoaded", function () {
   const cart = []; // Array untuk menyimpan produk dalam keranjang
   const cartBadge = document.querySelector(".header-action-btn .btn-badge"); // Notifikasi keranjang
-  const cartLink = document.querySelector('.header-action-btn[href="cart.html"] data'); // Total harga di header
+  const cartLink = document.querySelector(
+    '.header-action-btn[href="cart.html"] data'
+  ); // Total harga di header
 
   // Fungsi untuk memperbarui badge dan total keranjang
   function updateCartUI() {
-    const totalQuantity = cart.reduce((total, item) => total + item.quantity, 0);
-    const totalPrice = cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    const totalQuantity = cart.reduce(
+      (total, item) => total + item.quantity,
+      0
+    );
+    const totalPrice = cart.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
 
     cartBadge.textContent = totalQuantity; // Update jumlah badge
     cartLink.textContent = `Rp.${totalPrice.toLocaleString("id-ID")}`; // Update total harga
@@ -214,4 +275,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 });
-

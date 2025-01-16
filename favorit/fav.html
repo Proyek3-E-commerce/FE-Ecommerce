@@ -5,14 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Produk Favorit</title>
   <link rel="stylesheet" href="../favorit/style.css">
-  <script
-    type="module"
-    src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
-  ></script>
-  <script
-    nomodule
-    src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
-  ></script>
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 </head>
 <body>
   <!-- HEADER -->
@@ -39,25 +33,54 @@
     </div>
   </footer>
 
+  <!-- JavaScript -->
   <script>
     document.addEventListener("DOMContentLoaded", async function () {
       const favoritesContainer = document.getElementById("favorites-container");
-  
+
+      // Fungsi untuk mendekode JWT
+      function decodeJWT(token) {
+        try {
+          const payloadBase64 = token.split('.')[1]; // Ambil bagian payload
+          const payload = atob(payloadBase64); // Decode Base64
+          return JSON.parse(payload); // Parsing JSON
+        } catch (error) {
+          console.error("Invalid token:", error);
+          return null;
+        }
+      }
+
       // Fungsi untuk mengambil data favorit dari backend
       async function fetchFavorites() {
         try {
-          const response = await fetch("http://localhost:3000/api/favorites", {
+          const token = localStorage.getItem("token"); // Ambil token dari localStorage
+          if (!token) {
+            alert("Anda harus login terlebih dahulu.");
+            window.location.href = "login.html";
+            return [];
+          }
+
+          const decoded = decodeJWT(token); // Dekode token
+          const userId = decoded?.user_id; // Ambil user_id
+
+          if (!userId) {
+            alert("Token tidak valid. Silakan login ulang.");
+            window.location.href = "login.html";
+            return [];
+          }
+
+          const response = await fetch(`http://localhost:3000/favorites?user_id=${userId}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU5MDA5NjgsInVzZXJfaWQiOiI2NzY0ZjBkMDk0OWNkNmY5ZjhmNjcyYjUifQ.DTZpkPnPLS1VwU1_7pZ1gtfSNUn9x8boUKdgsEktXQM")}`, // Token JWT
+              Authorization: `Bearer ${token}`,
             },
           });
-  
+
           if (!response.ok) {
             throw new Error("Gagal mengambil data favorit");
           }
-  
+
           const data = await response.json();
           return data.products; // Daftar produk favorit
         } catch (error) {
@@ -65,26 +88,26 @@
           return [];
         }
       }
-  
+
       // Fungsi untuk menampilkan produk favorit di halaman
       async function displayFavorites() {
         const favorites = await fetchFavorites();
         favoritesContainer.innerHTML = ""; // Bersihkan kontainer
-  
+
         if (favorites.length === 0) {
           favoritesContainer.innerHTML = "<p style='text-align: center;'>Tidak ada produk di favorit.</p>";
         } else {
           favorites.forEach((product) => {
             const productHTML = `
-              <div class="favorite-card" id="product-${product._id}">
+              <div class="favorite-card" id="product-${product.id}">
                 <img src="${product.image}" alt="${product.name}">
                 <div class="card-info">
                   <h3 class="card-title">${product.name}</h3>
-                  <p class="price">${product.price}</p>
+                  <p class="price">Rp ${product.price.toLocaleString("id-ID")}</p>
                 </div>
                 <div class="card-actions">
-                  <button class="btn-remove" data-id="${product._id}">Hapus</button>
-                  <button class="btn-add-cart" data-id="${product._id}">
+                  <button class="btn-remove" data-id="${product.id}">Hapus</button>
+                  <button class="btn-add-cart" data-id="${product.id}">
                     <ion-icon name="cart-outline"></ion-icon>
                   </button>
                 </div>
@@ -92,35 +115,70 @@
             `;
             favoritesContainer.innerHTML += productHTML;
           });
-  
+
           attachListeners();
         }
       }
-  
-      // Fungsi untuk menghapus dan menambahkan produk ke keranjang tetap sama
+
+      // Fungsi untuk menambahkan event listener pada tombol hapus dan tambah ke keranjang
       function attachListeners() {
         const removeButtons = document.querySelectorAll(".btn-remove");
         const addCartButtons = document.querySelectorAll(".btn-add-cart");
-  
+
         removeButtons.forEach((button) => {
-          button.addEventListener("click", function () {
+          button.addEventListener("click", async function () {
             const productId = this.getAttribute("data-id");
-            console.log(`Hapus produk: ${productId}`);
+            try {
+              const token = localStorage.getItem("token");
+              const response = await fetch(`http://localhost:3000/favorites/${productId}`, {
+                method: "DELETE",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+              });
+
+              if (response.ok) {
+                console.log(`Produk ${productId} dihapus dari favorit.`);
+                displayFavorites(); // Refresh daftar favorit
+              } else {
+                console.error("Gagal menghapus produk dari favorit.");
+              }
+            } catch (error) {
+              console.error("Error:", error);
+            }
           });
         });
-  
+
         addCartButtons.forEach((button) => {
-          button.addEventListener("click", function () {
+          button.addEventListener("click", async function () {
             const productId = this.getAttribute("data-id");
-            console.log(`Tambahkan produk ke keranjang: ${productId}`);
+            try {
+              const token = localStorage.getItem("token");
+              const response = await fetch("http://localhost:3000/cart", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify({ product_id: productId, quantity: 1 }),
+              });
+
+              if (response.ok) {
+                console.log(`Produk ${productId} ditambahkan ke keranjang.`);
+              } else {
+                console.error("Gagal menambahkan produk ke keranjang.");
+              }
+            } catch (error) {
+              console.error("Error:", error);
+            }
           });
         });
       }
-  
+
       // Tampilkan produk favorit saat halaman dimuat
       displayFavorites();
     });
   </script>
-  
 </body>
 </html>
