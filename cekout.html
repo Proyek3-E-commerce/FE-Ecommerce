@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout Page</title>
+    <link rel="stylesheet" href="../cart/style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .product {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .product button {
+            padding: 5px 10px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .product button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .total {
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: right;
+            margin-top: 20px;
+        }
+        .form-section {
+            margin-top: 20px;
+        }
+        .form-section label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-section select, .form-section button, .form-section input[type="radio"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        .form-section button {
+            background: #28a745;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .payment-option {
+            margin-bottom: 10px;
+        }
+        .payment-option label {
+            display: inline-block;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+  <header class="cart-header">
+    <div class="container">
+      <a href="../index.html" class="logo">
+        <img src="../assets/images/logo.png" alt="Glowing">
+      </a>
+    </div>
+  </header>
+<div class="container">
+    <h1>Checkout</h1>
+
+    <!-- Product List -->
+    <div id="product-list">
+        <div class="product">
+            <span>Product 1</span>
+            <span>$10</span>
+            <div>
+                <button onclick="decreaseQuantity(0)">-</button>
+                <span id="quantity-0">1</span>
+                <button onclick="increaseQuantity(0)">+</button>
+            </div>
+        </div>
+        <div class="product">
+            <span>Product 2</span>
+            <span>$15</span>
+            <div>
+                <button onclick="decreaseQuantity(1)">-</button>
+                <span id="quantity-1">1</span>
+                <button onclick="increaseQuantity(1)">+</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Price -->
+    <div class="total">
+        Total: $<span id="total-price">25</span>
+    </div>
+
+    <!-- Shipping Options -->
+    <div class="form-section">
+        <label for="shipping">Shipping Options</label>
+        <select id="shipping">
+            <option value="standard">Standard - $5</option>
+            <option value="express">Express - $10</option>
+        </select>
+    </div>
+
+    <!-- Payment Options -->
+    <div class="form-section">
+        <label>Payment Options</label>
+        <div class="payment-option">
+            <input type="radio" id="qris" name="payment" value="qris" checked>
+            <label for="qris">QRIS</label>
+        </div>
+        <div class="payment-option">
+            <input type="radio" id="bank-transfer" name="payment" value="bank-transfer">
+            <label for="bank-transfer">Bank Transfer</label>
+        </div>
+    </div>
+
+    <!-- Payment Button -->
+    <div class="form-section">
+        <button onclick="processPayment()">Pay with Midtrans</button>
+    </div>
+</div>
+
+<script>
+    const prices = [10, 15]; // Product prices
+    const quantities = [1, 1]; // Product quantities
+
+    function updateTotal() {
+        const shippingCost = document.getElementById("shipping").value === "express" ? 10 : 5;
+        const total = prices.reduce((sum, price, index) => sum + price * quantities[index], 0) + shippingCost;
+        document.getElementById("total-price").textContent = total;
+    }
+
+    function increaseQuantity(index) {
+        quantities[index]++;
+        document.getElementById(`quantity-${index}`).textContent = quantities[index];
+        updateTotal();
+    }
+
+    function decreaseQuantity(index) {
+        if (quantities[index] > 1) {
+            quantities[index]--;
+            document.getElementById(`quantity-${index}`).textContent = quantities[index];
+            updateTotal();
+        }
+    }
+
+    async function processPayment() {
+        const shippingOption = document.getElementById("shipping").value;
+        const totalAmount = document.getElementById("total-price").textContent;
+        const paymentMethod = document.querySelector('input[name="payment"]:checked').value;
+
+        const paymentData = {
+            shipping: shippingOption,
+            amount: totalAmount,
+            payment_method: paymentMethod,
+            items: quantities.map((qty, index) => ({
+                name: `Product ${index + 1}`,
+                quantity: qty,
+                price: prices[index]
+            }))
+        };
+
+        try {
+            const response = await fetch("http://localhost:3000/payment", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(paymentData),
+            });
+
+            const result = await response.json();
+            alert(result.message || "Payment successful!");
+        } catch (error) {
+            alert("Payment failed: " + error.message);
+        }
+    }
+</script>
+</body>
+</html>
