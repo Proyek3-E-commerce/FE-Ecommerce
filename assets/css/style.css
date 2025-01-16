@@ -1464,7 +1464,7 @@ body {
   .search-field:focus { border-color: var(--black); }
 
   .header .input-wrapper { position: relative; }
-
+/* 
   .header .search-submit {
     position: absolute;
     top: 50%;
@@ -1473,9 +1473,16 @@ body {
     font-size: 22px;
   }
 
-  .header .search-submit ion-icon { --ionicon-stroke-width: 40px; }
+  .header .search-submit ion-icon { --ionicon-stroke-width: 40px; } */
 
-  .header .logo { margin-inline-end: 60px; }
+  .header .logo {
+    margin: 0 auto; /* Tetap menjaga pusat secara horizontal */
+    padding-left: 200px; /* Menambahkan jarak ke kanan dengan padding */
+    text-align: center; /* Memastikan teks tetap terpusat */
+    display: flex;
+    align-items: center; /* Memastikan vertikal tengah */
+    justify-content: center;
+}
 
   .header-actions {
     display: flex;
