@@ -32,7 +32,7 @@ body {
   }
   
   .product-price {
-    color: #e63946;
+    color: #f3f3bf;
     font-size: 1rem;
     margin: 8px 0;
   }
@@ -86,7 +86,7 @@ body {
   }
   
   button.store-button {
-    background-color: #ff5722;
+    background-color: #f3f3bf;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -136,7 +136,7 @@ body {
   
   .related-product-card p {
     font-size: 0.9rem;
-    color: #e63946;
+    color: #f3f3bf;
   }
   
   .related-product-card .description {
