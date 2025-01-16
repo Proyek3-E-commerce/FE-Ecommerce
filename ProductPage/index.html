@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Detail - Glowing</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f8f8;
+    }
+
+    .product-detail {
+      max-width: 768px;
+      margin: 20px auto;
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .product-image {
+      width: 100%;
+      height: auto;
+    }
+
+    .product-info {
+      padding: 16px;
+    }
+
+    .product-title {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .product-price {
+      color: #e63946;
+      font-size: 1.2rem;
+      margin: 8px 0;
+    }
+
+    .product-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .product-meta div {
+      display: flex;
+      align-items: center;
+    }
+
+    .store-info {
+      display: flex;
+      align-items: center;
+      margin: 16px 0;
+      padding: 16px;
+      border-top: 1px solid #e0e0e0;
+    }
+
+    .store-logo {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: #f4f4f4;
+      margin-right: 12px;
+    }
+
+    .store-details {
+      flex: 1;
+    }
+
+    .store-details h3 {
+      font-size: 1rem;
+      margin: 0 0 4px;
+    }
+
+    .store-details p {
+      font-size: 0.9rem;
+      color: #777;
+      margin: 0;
+    }
+
+    .related-products {
+      padding: 16px;
+    }
+
+    .related-products h3 {
+      margin-bottom: 16px;
+    }
+
+    .related-products-list {
+      display: flex;
+      overflow-x: auto;
+      gap: 16px;
+    }
+
+    .related-product-card {
+      min-width: 200px;
+      background-color: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      text-align: center;
+      padding: 12px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .related-product-card img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .related-product-card h4 {
+      font-size: 1rem;
+      margin: 8px 0;
+    }
+
+    .related-product-card p {
+      font-size: 0.9rem;
+      color: #555;
+      margin: 4px 0;
+    }
+
+    .related-product-card .product-price {
+      color: #e63946;
+      font-size: 1rem;
+      margin-bottom: 8px;
+    }
+
+    .related-product-card button {
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .related-product-card button:hover {
+      background-color: #e64a19;
+    }
+  </style>
+</head>
+<body>
+
+<div class="product-detail">
+  <img src="images/product-01.jpg" alt="Product Image" class="product-image">
+  <div class="product-info">
+    <h1 class="product-title">GLOWING | Toner Skincare Korean</h1>
+    <p class="product-price">Rp 58.900 <span style="text-decoration: line-through; color: #777;">Rp 139.000</span></p>
+    <div class="product-meta">
+      <div>
+        <span>10RB+ Terjual</span>
+      </div>
+      <div>
+        <span>Rating: 4.9</span>
+      </div>
+    </div>
+    <p style="margin-bottom: 16px;">Skincare Korea yang nyaman dipakai untuk berbagai tekstur kulit wajah.</p>
+    <div class="store-info">
+      <div class="store-logo"></div>
+      <div class="store-details">
+        <h3>Glowing</h3>
+        <p>KOTA JAKARTA UTARA</p>
+      </div>
+      <button>Kunjungi</button>
+    </div>
+  </div>
+</div>
+
+<div class="related-products">
+  <h3>Pilihan Toko</h3>
+  <div class="related-products-list">
+    <div class="related-product-card">
+      <img src="images/product-02.jpg" alt="Related Product 1">
+      <h4>Serum</h4>
+      <p>Mengatasi masalah kulit tertentu seperti jerawat, penuaan, atau kulit kusam.</p>
+      <p class="product-price">Rp 149.000</p>
+      <button>Checkout</button>
+    </div>
+    <div class="related-product-card">
+      <img src="images/product-03.jpg" alt="Related Product 2">
+      <h4>Facial Wash</h4>
+      <p>Membersihkan kotoran, minyak, dan sisa makeup dari kulit.</p>
+      <p class="product-price">Rp 52.900</p>
+      <button>Checkout</button>
+    </div>
+    <div class="related-product-card">
+      <img src="images/product-04.jpg" alt="Related Product 3">
+      <h4>Eye Mask</h4>
+      <p>Mengurangi kantung mata, lingkaran hitam, dan garis halus.</p>
+      <p class="product-price">Rp 79.000</p>
+      <button>Checkout</button>
+    </div>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
