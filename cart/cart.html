@@ -35,122 +35,93 @@
   </footer>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const cartContainer = document.getElementById("cart-container");
-      const totalPriceContainer = document.getElementById("total-price");
-  
-      // Fungsi untuk mengambil data keranjang dari server
-      async function fetchCart() {
-        try {
-          const response = await fetch("http://localhost:3000/cart", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${localStorage.getItem("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU5MDMwMjYsInVzZXJfaWQiOiI2NzY0ZjBkMDk0OWNkNmY5ZjhmNjcyYjUifQ.-jW0Xsyl3GarM9mbrpom_VsydeXg4XIMquVJQ3WFYto")}` // Ganti dengan mekanisme otentikasi Anda
-            }
-          });
-  
-          if (!response.ok) {
-            throw new Error("Failed to fetch cart");
-          }
-  
-          const cart = await response.json();
-          displayCart(cart.products || []);
-        } catch (error) {
-          console.error(error);
-          cartContainer.innerHTML = "<p style='text-align: center;'>Gagal memuat keranjang.</p>";
-        }
-      }
-  
-      // Fungsi untuk menampilkan keranjang
-      function displayCart(cart) {
-        cartContainer.innerHTML = "";
-        if (cart.length === 0) {
-          cartContainer.innerHTML = "<p style='text-align: center;'>Keranjang kosong.</p>";
-          totalPriceContainer.textContent = "0";
-        } else {
-          let totalPrice = 0;
-  
-          cart.forEach((item) => {
-            const cartItemHTML = `
-              <div class="cart-item">
-                <img src="${item.image || '#'}" alt="${item.name}" class="cart-item-image">
-                <div class="item-info">
-                  <h3>${item.name}</h3>
-                  <p>Harga Satuan: Rp. ${item.price}</p>
-                  <p>Total Harga: Rp. <span class="item-total-price">${item.price * item.quantity}</span></p>
-                  <div class="quantity-control">
-                    <button class="btn-decrease" data-id="${item.product_id}">-</button>
-                    <span class="quantity">${item.quantity}</span>
-                    <button class="btn-increase" data-id="${item.product_id}">+</button>
+    // Menambahkan Navbar dan Footer secara dinamis
+    // Memuat Navbar
+    fetch("components/navbar.html")
+      .then((response) => response.text())
+      .then((data) => {
+        document.getElementById("navbar-placeholder").innerHTML = data;
+      })
+      .catch((error) => console.error("Error loading navbar:", error));
+
+    // Memuat Footer
+    fetch("components/footer.html")
+      .then((response) => response.text())
+      .then((data) => {
+        document.getElementById("footer-placeholder").innerHTML = data;
+      })
+      .catch((error) => console.error("Error loading footer:", error));
+
+    // Fungsi untuk menampilkan produk di keranjang dengan harga dalam IDR
+    function loadCart() {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const cartListContainer = document.getElementById("cart-list");
+      cartListContainer.innerHTML = "";
+
+      // Fungsi untuk format harga dalam IDR
+      const formatCurrency = (value) => {
+        return new Intl.NumberFormat("id-ID", {
+          style: "currency",
+          currency: "IDR",
+        }).format(value);
+      };
+
+      cart.forEach((item, index) => {
+        const cartItem = document.createElement("div");
+        cartItem.classList.add("col-md-12");
+        cartItem.classList.add("mb-3");
+        cartItem.innerHTML = `
+                  <div class="cart-item">
+                      <div class="d-flex justify-content-between">
+                          <h5>${item.name}</h5>
+                          <button class="btn btn-danger btn-sm" onclick="removeFromCart(${index})">Remove</button>
+                      </div>
+                      <p>Price: ${formatCurrency(item.price)}</p>
+                      <p>Quantity: <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity(${index}, this.value)" class="form-control w-25"></p>
+                      <p>Total: ${formatCurrency(item.price * item.quantity)}</p>
                   </div>
-                  <button class="btn-remove" data-id="${item.product_id}">Hapus</button>
-                </div>
-              </div>
-            `;
-            cartContainer.innerHTML += cartItemHTML;
-  
-            totalPrice += item.price * item.quantity;
-          });
-  
-          totalPriceContainer.textContent = totalPrice;
-          attachEventListeners(cart);
-        }
-      }
-  
-      // Fungsi untuk memperbarui kuantitas atau menghapus item dari keranjang
-      async function updateCart(id, action) {
-        try {
-          const response = await fetch(`http://localhost:5000/cart/${id}`, {
-            method: action === "remove" ? "DELETE" : "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${localStorage.getItem("token")}`
-            },
-            body: JSON.stringify({ action })
-          });
-  
-          if (!response.ok) {
-            throw new Error("Failed to update cart");
-          }
-  
-          fetchCart(); // Refresh data keranjang
-        } catch (error) {
-          console.error(error);
-        }
-      }
-  
-      // Tambahkan event listener untuk tombol
-      function attachEventListeners(cart) {
-        const increaseButtons = document.querySelectorAll(".btn-increase");
-        const decreaseButtons = document.querySelectorAll(".btn-decrease");
-        const removeButtons = document.querySelectorAll(".btn-remove");
-  
-        increaseButtons.forEach(button => {
-          button.addEventListener("click", function () {
-            const productId = this.getAttribute("data-id");
-            updateCart(productId, "increase");
-          });
-        });
-  
-        decreaseButtons.forEach(button => {
-          button.addEventListener("click", function () {
-            const productId = this.getAttribute("data-id");
-            updateCart(productId, "decrease");
-          });
-        });
-  
-        removeButtons.forEach(button => {
-          button.addEventListener("click", function () {
-            const productId = this.getAttribute("data-id");
-            updateCart(productId, "remove");
-          });
-        });
-      }
-  
-      // Inisialisasi dengan memuat data keranjang
-      fetchCart();
-    });
-  </script>  
+              `;
+        cartListContainer.appendChild(cartItem);
+      });
+
+      updateCartItemCount(); // Memperbarui jumlah item di navbar setelah memuat cart
+    }
+
+    // Fungsi untuk mengupdate jumlah item di cart di navbar
+    function updateCartItemCount() {
+      const cart = JSON.parse(localStorage.getItem("cart")) || [];
+      const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0); // Hitung jumlah total item berdasarkan quantity
+      const cartItemCount = document.getElementById("cart-item-count");
+      cartItemCount.textContent = totalItems; // Update jumlah item di badge
+    }
+
+    // Fungsi untuk menghapus produk dari keranjang
+    function removeFromCart(index) {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      cart.splice(index, 1); // Hapus item berdasarkan index
+      localStorage.setItem("cart", JSON.stringify(cart));
+      loadCart(); // Reload cart setelah item dihapus
+    }
+
+    // Fungsi untuk memperbarui kuantitas produk
+    function updateQuantity(index, newQuantity) {
+      let cart = JSON.parse(localStorage.getItem("cart")) || [];
+      cart[index].quantity = parseInt(newQuantity, 10);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      loadCart(); // Reload cart setelah kuantitas diperbarui
+    }
+
+    // Fungsi untuk mengosongkan keranjang
+    function clearCart() {
+      localStorage.removeItem("cart");
+      loadCart(); // Reload cart setelah dikosongkan
+    }
+
+    // Memuat keranjang dan mengupdate jumlah item di navbar saat halaman dimuat
+    window.onload = function () {
+      loadCart(); // Memuat item keranjang
+      updateCartItemCount(); // Memperbarui jumlah item di navbar
+    };
+  </script> 
 </body>
 </html>
