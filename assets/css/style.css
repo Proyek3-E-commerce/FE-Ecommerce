@@ -1477,7 +1477,7 @@ body {
 
   .header .logo {
     margin: 0 auto; /* Tetap menjaga pusat secara horizontal */
-    padding-left: 200px; /* Menambahkan jarak ke kanan dengan padding */
+    padding-left: 180px; /* Menambahkan jarak ke kanan dengan padding */
     text-align: center; /* Memastikan teks tetap terpusat */
     display: flex;
     align-items: center; /* Memastikan vertikal tengah */
