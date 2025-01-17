@@ -3,154 +3,179 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Keranjang</title>
-  <link rel="stylesheet" href="../cart/style.css">
+  <title>Shopping Cart</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f8f8;
+      color: #333;
+    }
+
+    .header {
+      background-color: #fff;
+      padding: 10px 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header .logo {
+      text-decoration: none;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .cart-container {
+      max-width: 768px;
+      margin: 20px auto;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 8px;
+    }
+
+    .cart-item img {
+      max-width: 100px;
+      border-radius: 8px;
+    }
+
+    .cart-item-info {
+      flex: 1;
+      margin-left: 16px;
+    }
+
+    .cart-item-title {
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .cart-item-quantity {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .cart-item-price {
+      color: #e63946;
+      font-size: 1rem;
+    }
+
+    .cart-total {
+      text-align: right;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 18px;
+    }
+
+    .checkout-button {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 10px 0px;
+      background-color: #4caf50;
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 16px;
+    }
+
+    .checkout-button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
-  <!-- HEADER -->
-  <header class="cart-header">
+  <header class="header">
     <div class="container">
-      <a href="../index.html" class="logo">
-        <img src="../assets/images/logo.png" alt="Glowing">
-      </a>
+      <a href="../index.html" class="logo">Glowing</a>
     </div>
   </header>
 
-  <!-- MAIN CONTENT -->
-  <main>
-    <h1 class="header-title">Keranjang Belanja</h1>
-    <div id="cart-container" class="container">
-      <!-- Produk keranjang akan dimuat di sini -->
+  <div class="cart-container">
+    <h1>Shopping Cart</h1>
+    <div id="cart-items">
+      <p>Loading cart items...</p>
     </div>
-    <div id="total-price-container" class="container">
-      <h3>Total Harga: Rp. <span id="total-price">0</span></h3>
-    </div>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="cart-footer">
-    <div class="container">
-      <p class="footer-text">© 2024 Glowing - Reveal The Beauty of Skin</p>
-    </div>
-  </footer>
+    <div id="cart-total"></div>
+    <a href="./cekout.html" class="checkout-button">Proceed to Checkout</a>
+  </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const cartContainer = document.getElementById("cart-container");
-      const totalPriceContainer = document.getElementById("total-price");
-  
-      // Fungsi untuk mengambil data keranjang dari server
-      async function fetchCart() {
-        try {
-          const response = await fetch("http://localhost:3000/cart", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${localStorage.getItem("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU5MDMwMjYsInVzZXJfaWQiOiI2NzY0ZjBkMDk0OWNkNmY5ZjhmNjcyYjUifQ.-jW0Xsyl3GarM9mbrpom_VsydeXg4XIMquVJQ3WFYto")}` // Ganti dengan mekanisme otentikasi Anda
-            }
-          });
-  
-          if (!response.ok) {
-            throw new Error("Failed to fetch cart");
-          }
-  
-          const cart = await response.json();
-          displayCart(cart.products || []);
-        } catch (error) {
-          console.error(error);
-          cartContainer.innerHTML = "<p style='text-align: center;'>Gagal memuat keranjang.</p>";
+    const fetchCart = async (userId) => {
+      try {
+        const url = `http://localhost:3000/cart?user_id=${userId}`;
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch cart. Status: ${response.status}`);
         }
+        const data = await response.json();
+        renderCartItems(data.products);
+      } catch (error) {
+        console.error(error);
+        document.getElementById('cart-items').innerHTML = 'Failed to load cart.';
       }
-  
-      // Fungsi untuk menampilkan keranjang
-      function displayCart(cart) {
-        cartContainer.innerHTML = "";
-        if (cart.length === 0) {
-          cartContainer.innerHTML = "<p style='text-align: center;'>Keranjang kosong.</p>";
-          totalPriceContainer.textContent = "0";
-        } else {
-          let totalPrice = 0;
-  
-          cart.forEach((item) => {
-            const cartItemHTML = `
-              <div class="cart-item">
-                <img src="${item.image || '#'}" alt="${item.name}" class="cart-item-image">
-                <div class="item-info">
-                  <h3>${item.name}</h3>
-                  <p>Harga Satuan: Rp. ${item.price}</p>
-                  <p>Total Harga: Rp. <span class="item-total-price">${item.price * item.quantity}</span></p>
-                  <div class="quantity-control">
-                    <button class="btn-decrease" data-id="${item.product_id}">-</button>
-                    <span class="quantity">${item.quantity}</span>
-                    <button class="btn-increase" data-id="${item.product_id}">+</button>
-                  </div>
-                  <button class="btn-remove" data-id="${item.product_id}">Hapus</button>
-                </div>
+    };
+
+    const renderCartItems = (products) => {
+      const cartItemsContainer = document.getElementById('cart-items');
+      let total = 0;
+    
+      cartItemsContainer.innerHTML = products.map(product => {
+        const productTotal = product.price * product.quantity;
+        total += productTotal;
+    
+        return `
+          <div class="cart-item">
+            <img src="${product.image || './images/default.jpg'}" alt="${product.name || 'No Name'}" />
+            <div class="cart-item-info">
+              <p class="cart-item-title">${product.name || 'Unnamed Product'}</p>
+              <div class="cart-item-quantity">
+                <button onclick="updateQuantity('${product.product_id}', -1)">-</button>
+                <span>${product.quantity}</span>
+                <button onclick="updateQuantity('${product.product_id}', 1)">+</button>
               </div>
-            `;
-            cartContainer.innerHTML += cartItemHTML;
-  
-            totalPrice += item.price * item.quantity;
-          });
-  
-          totalPriceContainer.textContent = totalPrice;
-          attachEventListeners(cart);
-        }
+              <p class="cart-item-unit-price">Price: Rp.${product.price.toLocaleString()}</p>
+              <p class="cart-item-total-price">Total: Rp.${productTotal.toLocaleString()}</p>
+            </div>
+          </div>
+        `;
+    }).join('');    
+    
+      document.getElementById('cart-total').innerHTML = `Total: Rp.${total.toLocaleString()}`;
+    };    
+
+    const updateQuantity = async (productId, change) => {
+      const url = `http://localhost:3000/cart/update`; // Adjust the endpoint as per your backend
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: productId, change })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update cart. Status: ${response.status}`);
       }
-  
-      // Fungsi untuk memperbarui kuantitas atau menghapus item dari keranjang
-      async function updateCart(id, action) {
-        try {
-          const response = await fetch(`http://localhost:5000/cart/${id}`, {
-            method: action === "remove" ? "DELETE" : "PATCH",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${localStorage.getItem("token")}`
-            },
-            body: JSON.stringify({ action })
-          });
-  
-          if (!response.ok) {
-            throw new Error("Failed to update cart");
-          }
-  
-          fetchCart(); // Refresh data keranjang
-        } catch (error) {
-          console.error(error);
-        }
-      }
-  
-      // Tambahkan event listener untuk tombol
-      function attachEventListeners(cart) {
-        const increaseButtons = document.querySelectorAll(".btn-increase");
-        const decreaseButtons = document.querySelectorAll(".btn-decrease");
-        const removeButtons = document.querySelectorAll(".btn-remove");
-  
-        increaseButtons.forEach(button => {
-          button.addEventListener("click", function () {
-            const productId = this.getAttribute("data-id");
-            updateCart(productId, "increase");
-          });
-        });
-  
-        decreaseButtons.forEach(button => {
-          button.addEventListener("click", function () {
-            const productId = this.getAttribute("data-id");
-            updateCart(productId, "decrease");
-          });
-        });
-  
-        removeButtons.forEach(button => {
-          button.addEventListener("click", function () {
-            const productId = this.getAttribute("data-id");
-            updateCart(productId, "remove");
-          });
-        });
-      }
-  
-      // Inisialisasi dengan memuat data keranjang
-      fetchCart();
-    });
-  </script>  
+
+      const updatedCart = await response.json();
+      renderCartItems(updatedCart.products);
+    };
+
+    // Example: Fetch cart for a given user ID
+    const userId = "677d79e511891db79ed0fb33"; // Replace with the actual user ID
+    fetchCart(userId);
+  </script>
 </body>
 </html>

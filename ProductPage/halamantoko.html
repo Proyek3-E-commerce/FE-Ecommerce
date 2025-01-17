@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Halaman Toko - Glowing</title>
+  <link rel="stylesheet" href="./assets/css/style.css">
+  <style>
+    body {
+      font-family: 'Urbanist', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f8f8;
+    }
+
+    .store-header {
+      background-color: #f3f3bf;
+      color: rgb(0, 0, 0);
+      padding: 16px;
+      text-align: center;
+    }
+
+    .store-header img {
+      border-radius: 50%;
+      width: 80px;
+      height: 80px;
+      margin-bottom: 8px;
+    }
+
+    .store-header h1 {
+      font-size: 1.5rem;
+      margin: 0;
+    }
+
+    .store-header p {
+      font-size: 1rem;
+      margin: 4px 0;
+    }
+
+    .nav-bar {
+      display: flex;
+      justify-content: space-around;
+      background-color: #fff;
+      padding: 12px 0;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav-bar a {
+      text-decoration: none;
+      color: #555;
+      font-size: 1rem;
+      padding: 8px 16px;
+    }
+
+    .nav-bar a.active {
+      color: #000000;
+      font-weight: bold;
+    }
+
+    .section {
+      padding: 16px;
+    }
+
+    .section h2 {
+      font-size: 1.5rem;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr); /* 5 produk dalam 1 baris */
+      gap: 20px;
+      justify-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .product-card {
+      background-color: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+      width: 180px; /* Memastikan ukuran produk tetap konsisten */
+    }
+
+    .product-card:hover {
+      transform: scale(1.05); /* Efek zoom saat hover */
+    }
+
+    .product-card img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .product-card h3 {
+      font-size: 1.2rem;
+      margin: 12px 0;
+    }
+
+    .product-card p {
+      font-size: 1rem;
+      color: #555;
+      margin: 8px 0;
+    }
+
+    .product-card .price {
+      color: #e63946;
+      font-size: 1.2rem;
+      margin-bottom: 12px;
+    }
+
+    .product-card .old-price {
+      text-decoration: line-through;
+      color: #777;
+      font-size: 1rem;
+    }
+
+    .product-card button {
+      background-color: #f3f3bf;
+      color: rgb(0, 0, 0);
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .product-card button:hover {
+      background-color: #e64a19;
+    }
+  </style>
+</head>
+<body>
+
+<div class="store-header">
+  <img src="/Admin-Dashboard/images/profile.jpeg" alt="">
+  <h1>Toko Harapan</h1>
+  <p>Rating: 4.9 | 61RB+ Pengikut</p>
+</div>
+
+<div class="nav-bar">
+  <a href="#" class="active">Product</a>
+</div>
+
+<div class="section">
+  <h2>Kamu Mungkin Suka</h2>
+  <div class="product-list">
+    <!-- 10 Produk -->
+    <div class="product-card">
+      <img src="images/product-01.jpg" alt="Product 1">
+      <h3>Toner Skincare Korean</h3>
+      <p class="price">Rp 58.900 <span class="old-price">Rp 139.000</span></p>
+      <button>Checkout</button>
+    </div>
+    <div class="product-card">
+      <img src="images/product-02.jpg" alt="Product 2">
+      <h3>Serum Wajah Glowing</h3>
+      <p class="price">Rp 149.000</p>
+      <button>Checkout</button>
+    </div>
+    <div class="product-card">
+      <img src="images/product-03.jpg" alt="Product 3">
+      <h3>Facial Wash Lemon</h3>
+      <p class="price">Rp 52.900</p>
+      <button>Checkout</button>
+    </div>
+    <div class="product-card">
+      <img src="images/product-04.jpg" alt="Product 4">
+      <h3>Eye Mask Premium</h3>
+      <p class="price">Rp 79.000</p>
+      <button>Checkout</button>
+    </div>
+    <div class="product-card">
+      <img src="images/product-05.jpg" alt="Product 5">
+      <h3>Mosturaizer</h3>
+      <p class="price">Rp 138.719</p>
+      <button>Checkout</button>
+    </div>
+    <div class="product-card">
+      <img src="images/product-06.jpg" alt="Product 6">
+      <h3>Facial Wash Aloe Vera</h3>
+      <p class="price">Rp 68.900 <span class="old-price">Rp 139.000</span></p>
+      <button>Checkout</button>
+    </div>
+    <div class="product-card">
+      <img src="images/product-07.jpg" alt="Product 7">
+      <h3>Serum Collagen</h3>
+      <p class="price">Rp 189.000</p>
+      <button>Checkout</button>
+    </div>
+    <div class="product-card">
+      <img src="images/product-08.jpg" alt="Product 8">
+      <h3>Organic Mask Greentea</h3>
+      <p class="price">Rp 42.900</p>
+      <button>Checkout</button>
+    </div>
+    <div class="product-card">
+      <img src="images/product-09.jpg" alt="Product 9">
+      <h3>Setting Spray</h3>
+      <p class="price">Rp 69.000</p>
+      <button>Checkout</button>
+    </div>
+    <div class="product-card">
+      <img src="images/product-10.jpg" alt="Product 10">
+      <h3>Serum Vitamin C</h3>
+      <p class="price">Rp 159.000</p>
+      <button>Checkout</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

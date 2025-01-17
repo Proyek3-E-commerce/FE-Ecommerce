@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details</title>
+  <style>
+    /* General Body Styling */
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f8f8;
+      color: #333;
+    }
+
+    /* Header Styling */
+    .header {
+      background-color: #fff;
+      padding: 10px 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header .logo {
+      text-decoration: none;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    /* Product Detail Card */
+    .product-detail-card {
+      max-width: 960px;
+      margin: 30px auto;
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    /* Product Image */
+    .product-image {
+      flex: 1;
+      min-width: 300px;
+      max-width: 50%;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .product-image img {
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    /* Product Information */
+    .product-info {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .product-title {
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 12px;
+    }
+
+    .product-price {
+      color: #e63946;
+      font-size: 1.8rem;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .product-price del {
+      color: #777;
+      margin-right: 10px;
+      font-size: 1.2rem;
+    }
+
+    .product-description {
+      margin: 16px 0;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: #555;
+    }
+
+    .product-rating {
+      margin: 16px 0;
+    }
+
+    .product-rating span {
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .product-rating div ion-icon {
+      color: #f5c518;
+    }
+
+    /* Store Info */
+    .store-info {
+      background-color: #f9f9f9;
+      padding: 16px;
+      border-top: 1px solid #e0e0e0;
+      margin-top: 20px;
+    }
+
+    .store-info h3 {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .store-info p {
+      margin: 5px 0;
+      font-size: 1rem;
+    }
+
+    /* Add to Cart Button */
+    .btn-add-to-cart {
+      background-color: #ff5722;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-top: 20px;
+      align-self: flex-start;
+    }
+
+    .btn-add-to-cart:hover {
+      background-color: #e64a19;
+    }
+
+    /* Footer */
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 10px 0;
+      margin-top: 20px;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .product-detail-card {
+        flex-direction: column;
+      }
+
+      .product-image,
+      .product-info {
+        max-width: 100%;
+        min-width: 100%;
+      }
+
+      .product-title {
+        font-size: 1.5rem;
+      }
+
+      .product-price {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <a href="../index.html" class="logo">Glowing</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="product-details">
+      <div class="container">
+        <div id="product-container">
+          <p>Loading product details...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 Glowing. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get('productId');
+
+    const renderProductDetails = (data) => {
+      const product = data.product;
+      const store = data.store;
+
+      const productContainer = document.getElementById('product-container');
+      productContainer.innerHTML = `
+        <div class="product-detail-card">
+          <!-- Product Images -->
+          <div class="product-image">
+            <img src="${product.image}" alt="${product.name}" loading="lazy">
+          </div>
+
+          <!-- Product Info -->
+          <div class="product-info">
+            <h1 class="product-title">${product.category}: ${product.name}</h1>
+            <p class="product-price">
+              ${product.discount > 0 ? `<del>Rp.${product.price.toLocaleString()}</del>` : ''}
+              <span>Rp.${(product.price * (1 - product.discount / 100)).toLocaleString()}</span>
+            </p>
+            <p class="product-description">${product.description}</p>
+            <div class="product-rating">
+              <span>Rating: ${product.rating} / 5.0</span>
+              <div>${Array(Math.round(product.rating)).fill('<ion-icon name="star" aria-hidden="true"></ion-icon>').join('')}</div>
+              <p>${product.reviews} reviews</p>
+            </div>
+           <div class="store-info">
+  <!-- Nama Toko dengan Ikon -->
+  <a href="halamantoko.html?storeId=${store.seller_id}" class="store-link" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit;">
+    <ion-icon name="storefront-outline" aria-hidden="true" style="font-size: 1.5rem; color: #e63946;"></ion-icon>
+    <span>${store.store_name}</span>
+  </a>
+  <!-- Alamat dan Email -->
+  <p>${store.full_address}</p>
+  <p>Email: <a href="mailto:${store.seller_email}">${store.seller_email}</a></p>
+  <p>Status Toko: ${store.store_status}</p>
+</div>
+
+             <button class="btn-add-to-cart" onclick="window.location.href='../cart/cart.html'">Add to Cart</button>
+          </div>
+        </div>
+      `;
+    };
+
+    if (productId) {
+      fetch(`http://localhost:3000/products/${productId}`)
+        .then(response => response.json())
+        .then(data => renderProductDetails(data))
+        .catch(error => console.error("Error fetching product details:", error));
+    } else {
+      document.getElementById('product-container').innerHTML = "<p>No product ID found in URL</p>";
+    }
+  </script>
+</body>
+</html>
