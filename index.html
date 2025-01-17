@@ -71,8 +71,8 @@
           <a href="#" class="logo">
             <img
               src="./assets/images/logo.png"
-              width="179"
-              height="26"
+              width="176"
+              height="80"
               alt="Glowing"
             />
           </a>
@@ -80,17 +80,6 @@
           <div class="header-actions">
             <a href="login.html" class="header-action-btn" aria-label="user">
               <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
-            </a>
-
-            <!-- Ikon Favorit -->
-            <a
-              class="header-action-btn"
-              href="../favorit/fav.html"
-              class="header-action-btn"
-              aria-label="favourite item"
-            >
-              <ion-icon name="star-outline" aria-hidden="true"></ion-icon>
-              <span id="favorite-count" class="btn-badge">0</span>
             </a>
 
             <!-- Ikon Keranjang -->
@@ -324,31 +313,15 @@
       <section class="section shop" id="shop" aria-label="shop" data-section>
         <div class="container">
           <div class="title-wrapper">
-            <h2 class="h2 section-title">Our Bestsellers</h2>
-            <a href="productbs.html" class="btn-link">
+            <h2 class="h2 section-title">All Products</h2> <!-- Ganti judul -->
+            <a href="product.html" class="btn-link">
               <span class="span">Shop All Products</span>
               <ion-icon name="arrow-forward" aria-hidden="true"></ion-icon>
             </a>
           </div>
       
           <ul id="bestsellers-list" class="has-scrollbar">
-            <!-- Produk Bestseller akan dimuat di sini secara dinamis -->
-          </ul>
-        </div>
-      </section>
-      
-      <section class="section shop" id="shop" aria-label="shop" data-section>
-        <div class="container">
-          <div class="title-wrapper">
-            <h2 class="h2 section-title">Under Rp.100.000</h2>
-            <a href="product100.html" class="btn-link">
-              <span class="span">Shop All Products</span>
-              <ion-icon name="arrow-forward" aria-hidden="true"></ion-icon>
-            </a>
-          </div>
-      
-          <ul id="under-100k-list" class="has-scrollbar">
-            <!-- Produk Under 100k akan dimuat di sini secara dinamis -->
+            <!-- Semua produk akan dimuat di sini secara dinamis -->
           </ul>
         </div>
       </section>
@@ -358,15 +331,16 @@
           try {
             const response = await fetch(url);
             const data = await response.json();
-        
-            console.log('API Response:', data);
-        
+      
+            console.log('Fetched Data:', data);
+      
             if (!data || !data.data || !Array.isArray(data.data)) {
               console.error("Invalid data format:", data);
+              document.getElementById(containerId).innerHTML = "<p>No products found</p>";
               return;
             }
-        
-            const products = data.data; // Pastikan data.data adalah array
+      
+            const products = data.data;
             const container = document.getElementById(containerId);
             container.innerHTML = products
               .map(product => {
@@ -374,25 +348,15 @@
                   <li class="scrollbar-item">
                     <div class="shop-card">
                       <div class="card-banner img-holder" style="--width: 540; --height: 720">
-                        <img
-                          src="${product.image}"
-                          width="540"
-                          height="720"
-                          loading="lazy"
-                          alt="${product.name}"
-                          class="img-cover"
-                        />
+                        <a href="ProductPage/index.html?productId=${product.id}" class="product-link">
+                          <img src="ProductPage/${product.image}" width="540" height="720" loading="lazy" alt="${product.name}" class="img-cover" />
+                        </a>
                         ${product.discount > 0 ? `<span class="badge" aria-label="${product.discount}% off">-${product.discount}%</span>` : ''}
                         <div class="card-actions">
-                          <button class="action-btn" aria-label="add to cart">
-                            <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>
-                          </button>
-                          <button class="action-btn" aria-label="add to wishlist">
-                            <ion-icon name="star-outline" aria-hidden="true"></ion-icon>
-                          </button>
-                          <button class="action-btn" aria-label="compare">
-                            <ion-icon name="repeat-outline" aria-hidden="true"></ion-icon>
-                          </button>
+                          <button class="action-btn" aria-label="add to cart" onclick="addToCart(${JSON.stringify(product)})">
+  <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>
+</button>
+
                         </div>
                       </div>
                       <div class="card-content">
@@ -400,9 +364,7 @@
                           ${product.discount > 0 ? `<del class="del">Rp.${(product.price).toLocaleString()}</del>` : ''}
                           <span class="span">Rp.${((product.price * (1 - product.discount / 100))).toLocaleString()}</span>
                         </div>
-                        <h3>
-                          <a href="#" class="card-title">${product.name}</a>
-                        </h3>
+                        <h3><a href="ProductPage/index.html?productId=${product.id}" class="card-title">${product.name}</a></h3>
                         <div class="card-rating">
                           <div class="rating-wrapper" aria-label="${product.rating} star rating">
                             ${Array(Math.round(product.rating)).fill('<ion-icon name="star" aria-hidden="true"></ion-icon>').join('')}
@@ -418,13 +380,28 @@
           } catch (error) {
             console.error("Error fetching products:", error);
           }
-        }      
-        // Fetch products for both sections
-        fetchProducts('http://localhost:3000/products/under100k');
-        fetchProducts('http://localhost:3000/products/best-sellers' );
-      </script>
-      
+        }
 
+        const addToCart = (product) => {
+          // Ambil keranjang dari localStorage
+          let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+          // Tambahkan produk ke keranjang
+          cart.push(product);
+        
+          // Simpan kembali ke localStorage
+          localStorage.setItem('cart', JSON.stringify(cart));
+        
+          // Beri notifikasi bahwa produk telah ditambahkan
+          alert(`${product.name} telah ditambahkan ke keranjang!`);
+        };
+        
+      
+        // Fetch products for both sections
+        fetchProducts('http://localhost:3000/products/under100k', 'under-100k-list');
+        fetchProducts('http://localhost:3000/products', 'bestsellers-list'); // Menggunakan endpoint 'products' untuk semua produk
+      </script>     
+  
         <!-- 
         - #BANNER
       -->
@@ -574,7 +551,7 @@
               <p class="offer-subtitle">
                 <span class="span">Special Offer</span>
 
-                <span class="badge" aria-label="20% off">-20%</span>
+                <span class="badge" aria-label="20% off">-10%</span>
               </p>
 
               <h2 class="h2-large section-title">Mountain Pine Bath Oil</h2>
@@ -584,7 +561,7 @@
                 designed for everyone.
               </p>
               <br>
-              <a href="product100.html" class="btn btn-primary">Get Under Rp.100.000</a>
+              <a href="product.html" class="btn btn-primary">Get All Product</a>
             </div>
           </div>
         </section>

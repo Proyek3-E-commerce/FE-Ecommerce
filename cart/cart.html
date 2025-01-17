@@ -3,125 +3,179 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Keranjang</title>
-  <link rel="stylesheet" href="../cart/style.css">
+  <title>Shopping Cart</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f8f8;
+      color: #333;
+    }
+
+    .header {
+      background-color: #fff;
+      padding: 10px 20px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .header .logo {
+      text-decoration: none;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .cart-container {
+      max-width: 768px;
+      margin: 20px auto;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .cart-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 8px;
+    }
+
+    .cart-item img {
+      max-width: 100px;
+      border-radius: 8px;
+    }
+
+    .cart-item-info {
+      flex: 1;
+      margin-left: 16px;
+    }
+
+    .cart-item-title {
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .cart-item-quantity {
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    .cart-item-price {
+      color: #e63946;
+      font-size: 1rem;
+    }
+
+    .cart-total {
+      text-align: right;
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-top: 18px;
+    }
+
+    .checkout-button {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 10px 0px;
+      background-color: #4caf50;
+      color: white;
+      font-size: 1rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      margin-top: 16px;
+    }
+
+    .checkout-button:hover {
+      background-color: #45a049;
+    }
+  </style>
 </head>
 <body>
-  <!-- HEADER -->
-  <header class="cart-header">
+  <header class="header">
     <div class="container">
-      <a href="../index.html" class="logo">
-        <img src="../assets/images/logo.png" alt="Glowing">
-      </a>
+      <a href="../index.html" class="logo">Glowing</a>
     </div>
   </header>
 
-  <!-- MAIN CONTENT -->
-  <main>
-    <h1 class="header-title">Keranjang Belanja</h1>
-    <div id="cart-container" class="container">
-      <!-- Produk keranjang akan dimuat di sini -->
+  <div class="cart-container">
+    <h1>Shopping Cart</h1>
+    <div id="cart-items">
+      <p>Loading cart items...</p>
     </div>
-    <div id="total-price-container" class="container">
-      <h3>Total Harga: Rp. <span id="total-price">0</span></h3>
-    </div>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="cart-footer">
-    <div class="container">
-      <p class="footer-text">© 2024 Glowing - Reveal The Beauty of Skin</p>
-    </div>
-  </footer>
+    <div id="cart-total"></div>
+    <a href="./cekout.html" class="checkout-button">Proceed to Checkout</a>
+  </div>
 
   <script>
-    // Menambahkan Navbar dan Footer secara dinamis
-    // Memuat Navbar
-    fetch("components/navbar.html")
-      .then((response) => response.text())
-      .then((data) => {
-        document.getElementById("navbar-placeholder").innerHTML = data;
-      })
-      .catch((error) => console.error("Error loading navbar:", error));
+    const fetchCart = async (userId) => {
+      try {
+        const url = `http://localhost:3000/cart?user_id=${userId}`;
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch cart. Status: ${response.status}`);
+        }
+        const data = await response.json();
+        renderCartItems(data.products);
+      } catch (error) {
+        console.error(error);
+        document.getElementById('cart-items').innerHTML = 'Failed to load cart.';
+      }
+    };
 
-    // Memuat Footer
-    fetch("components/footer.html")
-      .then((response) => response.text())
-      .then((data) => {
-        document.getElementById("footer-placeholder").innerHTML = data;
-      })
-      .catch((error) => console.error("Error loading footer:", error));
+    const renderCartItems = (products) => {
+      const cartItemsContainer = document.getElementById('cart-items');
+      let total = 0;
+    
+      cartItemsContainer.innerHTML = products.map(product => {
+        const productTotal = product.price * product.quantity;
+        total += productTotal;
+    
+        return `
+          <div class="cart-item">
+            <img src="${product.image || './images/default.jpg'}" alt="${product.name || 'No Name'}" />
+            <div class="cart-item-info">
+              <p class="cart-item-title">${product.name || 'Unnamed Product'}</p>
+              <div class="cart-item-quantity">
+                <button onclick="updateQuantity('${product.product_id}', -1)">-</button>
+                <span>${product.quantity}</span>
+                <button onclick="updateQuantity('${product.product_id}', 1)">+</button>
+              </div>
+              <p class="cart-item-unit-price">Price: Rp.${product.price.toLocaleString()}</p>
+              <p class="cart-item-total-price">Total: Rp.${productTotal.toLocaleString()}</p>
+            </div>
+          </div>
+        `;
+    }).join('');    
+    
+      document.getElementById('cart-total').innerHTML = `Total: Rp.${total.toLocaleString()}`;
+    };    
 
-    // Fungsi untuk menampilkan produk di keranjang dengan harga dalam IDR
-    function loadCart() {
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const cartListContainer = document.getElementById("cart-list");
-      cartListContainer.innerHTML = "";
-
-      // Fungsi untuk format harga dalam IDR
-      const formatCurrency = (value) => {
-        return new Intl.NumberFormat("id-ID", {
-          style: "currency",
-          currency: "IDR",
-        }).format(value);
-      };
-
-      cart.forEach((item, index) => {
-        const cartItem = document.createElement("div");
-        cartItem.classList.add("col-md-12");
-        cartItem.classList.add("mb-3");
-        cartItem.innerHTML = `
-                  <div class="cart-item">
-                      <div class="d-flex justify-content-between">
-                          <h5>${item.name}</h5>
-                          <button class="btn btn-danger btn-sm" onclick="removeFromCart(${index})">Remove</button>
-                      </div>
-                      <p>Price: ${formatCurrency(item.price)}</p>
-                      <p>Quantity: <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity(${index}, this.value)" class="form-control w-25"></p>
-                      <p>Total: ${formatCurrency(item.price * item.quantity)}</p>
-                  </div>
-              `;
-        cartListContainer.appendChild(cartItem);
+    const updateQuantity = async (productId, change) => {
+      const url = `http://localhost:3000/cart/update`; // Adjust the endpoint as per your backend
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ product_id: productId, change })
       });
 
-      updateCartItemCount(); // Memperbarui jumlah item di navbar setelah memuat cart
-    }
+      if (!response.ok) {
+        throw new Error(`Failed to update cart. Status: ${response.status}`);
+      }
 
-    // Fungsi untuk mengupdate jumlah item di cart di navbar
-    function updateCartItemCount() {
-      const cart = JSON.parse(localStorage.getItem("cart")) || [];
-      const totalItems = cart.reduce((acc, item) => acc + item.quantity, 0); // Hitung jumlah total item berdasarkan quantity
-      const cartItemCount = document.getElementById("cart-item-count");
-      cartItemCount.textContent = totalItems; // Update jumlah item di badge
-    }
-
-    // Fungsi untuk menghapus produk dari keranjang
-    function removeFromCart(index) {
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      cart.splice(index, 1); // Hapus item berdasarkan index
-      localStorage.setItem("cart", JSON.stringify(cart));
-      loadCart(); // Reload cart setelah item dihapus
-    }
-
-    // Fungsi untuk memperbarui kuantitas produk
-    function updateQuantity(index, newQuantity) {
-      let cart = JSON.parse(localStorage.getItem("cart")) || [];
-      cart[index].quantity = parseInt(newQuantity, 10);
-      localStorage.setItem("cart", JSON.stringify(cart));
-      loadCart(); // Reload cart setelah kuantitas diperbarui
-    }
-
-    // Fungsi untuk mengosongkan keranjang
-    function clearCart() {
-      localStorage.removeItem("cart");
-      loadCart(); // Reload cart setelah dikosongkan
-    }
-
-    // Memuat keranjang dan mengupdate jumlah item di navbar saat halaman dimuat
-    window.onload = function () {
-      loadCart(); // Memuat item keranjang
-      updateCartItemCount(); // Memperbarui jumlah item di navbar
+      const updatedCart = await response.json();
+      renderCartItems(updatedCart.products);
     };
-  </script> 
+
+    // Example: Fetch cart for a given user ID
+    const userId = "677d79e511891db79ed0fb33"; // Replace with the actual user ID
+    fetchCart(userId);
+  </script>
 </body>
 </html>

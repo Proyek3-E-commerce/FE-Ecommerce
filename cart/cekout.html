@@ -72,25 +72,35 @@
             display: inline-block;
             margin-left: 5px;
         }
+        .header {
+            background-color: #fff;
+            padding: 10px 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+          }
+      
+          .header .logo {
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+          }
     </style>
 </head>
 <body>
     <!-- HEADER -->
-  <header class="cart-header">
+    <header class="header">
+          <a href="../index.html" class="logo">Glowing</a>
+          <br>
+    </header>
+    <br>
     <div class="container">
-      <a href="../index.html" class="logo">
-        <img src="../assets/images/logo.png" alt="Glowing">
-      </a>
-    </div>
-  </header>
-<div class="container">
     <h1>Checkout</h1>
 
     <!-- Product List -->
     <div id="product-list">
         <div class="product">
             <span>Product 1</span>
-            <span>$10</span>
+            <span>Rp.10000</span>
             <div>
                 <button onclick="decreaseQuantity(0)">-</button>
                 <span id="quantity-0">1</span>
@@ -99,7 +109,7 @@
         </div>
         <div class="product">
             <span>Product 2</span>
-            <span>$15</span>
+            <span>Rp.15000</span>
             <div>
                 <button onclick="decreaseQuantity(1)">-</button>
                 <span id="quantity-1">1</span>
@@ -110,15 +120,15 @@
 
     <!-- Total Price -->
     <div class="total">
-        Total: $<span id="total-price">25</span>
+        Total: Rp.<span id="total-price">25000</span>
     </div>
 
     <!-- Shipping Options -->
     <div class="form-section">
         <label for="shipping">Shipping Options</label>
         <select id="shipping">
-            <option value="standard">Standard - $5</option>
-            <option value="express">Express - $10</option>
+            <option value="standard">Standard - Rp.5000</option>
+            <option value="express">Express - Rp.10000</option>
         </select>
     </div>
 
@@ -137,7 +147,7 @@
 
     <!-- Payment Button -->
     <div class="form-section">
-        <button onclick="processPayment()">Pay with Midtrans</button>
+        <button onclick="processPayment()">Payment</button>
     </div>
 </div>
 
