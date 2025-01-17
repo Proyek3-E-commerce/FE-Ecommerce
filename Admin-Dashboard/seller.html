@@ -1,174 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sellers - Dashboard Glowsie</title>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0" />
-  <link rel="stylesheet" href="style.css">
-  <style>
-    .hidden {
-      display: none;
-    }
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sellers - Dashboard Glowsie</title>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@48,400,0,0"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .hidden {
+        display: none;
+      }
 
-    .modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
 
-    .modal.hidden {
-      display: none;
-    }
+      .modal.hidden {
+        display: none;
+      }
 
-    .modal-content {
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      width: 300px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
+      .modal-content {
+        background-color: white;
+        padding: 20px;
+        border-radius: 10px;
+        width: 300px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      }
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
 
-    table, th, td {
-      border: 1px solid #ddd;
-    }
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
 
-    th, td {
-      padding: 10px;
-      text-align: left;
-    }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+      }
 
-    .incomplete {
-      background-color: #fffbe6;
-      color: #ff9900;
-    }
+      .modal-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 15px;
+      }
 
-    .modal-actions {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 15px;
-    }
-
-    .modal-actions button {
-      flex: 1;
-      margin: 0 5px;
-    }
-  </style>
-</head>
-<body>
-   <div class="container">
+      .modal-actions button {
+        flex: 1;
+        margin: 0 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
       <aside>
-         <div class="top">
-           <div class="logo">
-             <h2>G <span class="danger">LOWSIE</span></h2>
-           </div>
-           <div class="close" id="close_btn">
+        <div class="top">
+          <div class="logo">
+            <h2>G <span class="danger">LOWSIE</span></h2>
+          </div>
+          <div class="close" id="close_btn">
             <span class="material-symbols-sharp">close</span>
-           </div>
-         </div>
-         <div class="sidebar">
-            <a href="index.html" id="nav-dashboard">
-              <span class="material-symbols-sharp">grid_view</span>
-              <h3>Dashboard</h3>
-           </a>
-           <a href="customers.html" id="nav-customers">
+          </div>
+        </div>
+        <div class="sidebar">
+          <a href="index.html" id="nav-dashboard">
+            <span class="material-symbols-sharp">grid_view</span>
+            <h3>Dashboard</h3>
+          </a>
+          <a href="customers.html" id="nav-customers">
             <span class="material-symbols-sharp">person_outline</span>
             <h3>Customers</h3>
-           </a>
-           <a href="seller.html" id="nav-sellers" class="active">
-              <span class="material-symbols-sharp">storefront</span>
-              <h3>Sellers</h3>
-           </a>
-           <a href="product.html" id="nav-products">
+          </a>
+          <a href="seller.html" id="nav-sellers" class="active">
+            <span class="material-symbols-sharp">storefront</span>
+            <h3>Sellers</h3>
+          </a>
+          <a href="product.html" id="nav-products">
             <span class="material-symbols-sharp">receipt_long</span>
             <h3>Products</h3>
-         </a>
-           <a href="logout.html">
-              <span class="material-symbols-sharp">logout</span>
-              <h3>Logout</h3>
-           </a>
-         </div>
+          </a>
+          <a href="logout.html">
+            <span class="material-symbols-sharp">logout</span>
+            <h3>Logout</h3>
+          </a>
+        </div>
       </aside>
       <main id="content">
-           <h1>Sellers</h1>
-           <div class="add-seller">
-              <h2>Add New Seller</h2>
-              <form id="seller-form">
-                 <input type="text" id="seller-name" placeholder="Seller Name" required>
-                 <input type="email" id="seller-email" placeholder="Seller Email" required>
-                 <button type="submit">Add Seller</button>
-              </form>
-           </div>
-           <div class="seller-list">
-              <h2>Seller List</h2>
-              <table id="seller-table">
-                  <thead>
-                   <tr>
-                     <th>Name</th>
-                     <th>Email</th>
-                     <th>Store Name</th>
-                     <th>Address</th>
-                     <th>NIK</th>
-                     <th>Suspended</th>
-                     <th>Actions</th>
-                   </tr>
-                  </thead>
-                   <tbody>
-                      <!-- Seller rows will be dynamically inserted here -->
-                   </tbody>
-              </table>
-           </div>
-      </main>
-      <div class="right">
-        <div class="top">
-           <button id="menu_bar">
-             <span class="material-symbols-sharp">menu</span>
-           </button>
-            <div class="profile">
-               <div class="info">
-                   <p><b>Glowsie</b></p>
-                   <p>Admin</p>
-               </div>
-               <div class="profile-photo">
-                 <img src="./images/profile.jpeg" alt="Profile">
-               </div>
-            </div>
+        <h1>Sellers</h1>
+        <div class="add-seller">
+          <h2>Add New Seller</h2>
+          <form id="seller-form">
+            <input
+              type="text"
+              id="seller-name"
+              placeholder="Seller Name"
+              required
+            />
+            <input
+              type="email"
+              id="seller-email"
+              placeholder="Seller Email"
+              required
+            />
+            <button type="submit">Add Seller</button>
+          </form>
         </div>
-      </div>
-   </div>
+        <div class="seller-list">
+          <h2>Seller List</h2>
+          <table id="seller-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Suspended</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Seller rows will be dynamically inserted here -->
+            </tbody>
+          </table>
+        </div>
+      </main>
 
-   <!-- Edit Modal -->
-   <div id="edit-modal" class="modal hidden">
-      <div class="modal-content">
-         <h2>Edit Seller</h2>
-         <form id="edit-form">
-            <input type="text" id="edit-name" placeholder="Seller Name" required>
-            <input type="email" id="edit-email" placeholder="Seller Email" required>
-            <input type="text" id="edit-store-name" placeholder="Store Name">
-            <input type="text" id="edit-address" placeholder="Address">
-            <input type="text" id="edit-nik" placeholder="NIK">
+      <!-- Edit Modal -->
+      <div id="edit-modal" class="modal hidden">
+        <div class="modal-content">
+          <h2>Edit Seller</h2>
+          <form id="edit-form">
+            <input
+              type="text"
+              id="edit-name"
+              placeholder="Seller Name"
+              required
+            />
+            <input
+              type="email"
+              id="edit-email"
+              placeholder="Seller Email"
+              required
+            />
             <div class="modal-actions">
               <button type="submit">Save Changes</button>
               <button type="button" id="close-modal">Cancel</button>
             </div>
-         </form>
+          </form>
+        </div>
       </div>
-   </div>
-
-   <script>
+    </div>
+    <script>
       document.addEventListener("DOMContentLoaded", () => {
         const apiUrl = "http://localhost:3000/sellers";
         const sellerTable = document.querySelector("#seller-table tbody");
@@ -179,47 +177,53 @@
 
         let editingSellerId = null;
 
-        // Fetch and display sellers
         async function fetchSellers() {
           try {
             const response = await fetch(apiUrl);
-            const sellers = await response.json();
+            if (!response.ok) throw new Error("Failed to fetch sellers");
 
-            sellerTable.innerHTML = sellers
-              .map((seller) => {
-                const isComplete = seller.store_info?.store_name && seller.store_info?.full_address && seller.store_info?.nik;
-                return `
-                <tr class="${isComplete ? "" : "incomplete"}">
-                  <td>${seller.username}</td>
-                  <td>${seller.email}</td>
-                  <td>${seller.store_info?.store_name || "Incomplete"}</td>
-                  <td>${seller.store_info?.full_address || "Incomplete"}</td>
-                  <td>${seller.store_info?.nik || "Incomplete"}</td>
-                  <td>${seller.suspended ? "Yes" : "No"}</td>
-                  <td>
-                    <button class="edit-btn" data-id="${seller._id}">Edit</button>
-                    <button class="delete-btn" data-id="${seller._id}">Delete</button>
-                  </td>
-                </tr>`;
-              })
-              .join("");
+            const data = await response.json();
+            renderSellers(data.data);
           } catch (error) {
             console.error("Error fetching sellers:", error);
           }
         }
 
-        // Add new seller
+        function renderSellers(sellers) {
+          sellerTable.innerHTML = sellers
+            .map(
+              (seller) => `
+            <tr>
+              <td>${seller.username}</td>
+              <td>${seller.email}</td>
+              <td>${seller.suspended ? "Yes" : "No"}</td>
+              <td>
+                <button class="edit-btn" data-id="${seller.id}">Edit</button>
+                <button class="suspend-btn" data-id="${seller.id}">${
+                seller.suspended ? "Unsuspend" : "Suspend"
+              }</button>
+              </td>
+            </tr>
+          `
+            )
+            .join("");
+        }
+
         sellerForm.addEventListener("submit", async (e) => {
           e.preventDefault();
           const name = document.getElementById("seller-name").value;
           const email = document.getElementById("seller-email").value;
 
           try {
-            await fetch(apiUrl, {
+            const response = await fetch(apiUrl, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ username: name, email }),
             });
+
+            if (!response.ok) throw new Error("Failed to add seller");
+
+            alert("Seller added successfully!");
             sellerForm.reset();
             fetchSellers();
           } catch (error) {
@@ -227,47 +231,52 @@
           }
         });
 
-        // Edit seller
-        sellerTable.addEventListener("click", (e) => {
-          if (e.target.classList.contains("edit-btn")) {
-            editingSellerId = e.target.dataset.id;
+        sellerTable.addEventListener("click", async (e) => {
+          const sellerId = e.target.getAttribute("data-id");
+          if (!sellerId) return;
 
+          if (e.target.classList.contains("edit-btn")) {
+            editingSellerId = sellerId;
             const row = e.target.closest("tr");
             const name = row.children[0].textContent;
             const email = row.children[1].textContent;
-            const storeName = row.children[2].textContent !== "Incomplete" ? row.children[2].textContent : "";
-            const address = row.children[3].textContent !== "Incomplete" ? row.children[3].textContent : "";
-            const nik = row.children[4].textContent !== "Incomplete" ? row.children[4].textContent : "";
 
             document.getElementById("edit-name").value = name;
             document.getElementById("edit-email").value = email;
-            document.getElementById("edit-store-name").value = storeName;
-            document.getElementById("edit-address").value = address;
-            document.getElementById("edit-nik").value = nik;
 
             editModal.classList.remove("hidden");
+          } else if (e.target.classList.contains("suspend-btn")) {
+            const action = e.target.textContent === "Suspend";
+            try {
+              const response = await fetch(
+                `${apiUrl}/${sellerId}/${action ? "suspend" : "unsuspend"}`,
+                { method: "PUT" }
+              );
+              if (!response.ok) throw new Error("Failed to toggle suspend");
+              fetchSellers();
+            } catch (error) {
+              console.error("Error toggling suspend:", error);
+            }
           }
         });
 
         editForm.addEventListener("submit", async (e) => {
           e.preventDefault();
+          if (!editingSellerId) return;
+
           const name = document.getElementById("edit-name").value;
           const email = document.getElementById("edit-email").value;
-          const storeName = document.getElementById("edit-store-name").value;
-          const address = document.getElementById("edit-address").value;
-          const nik = document.getElementById("edit-nik").value;
-
-          if (!editingSellerId) {
-            console.error("No seller ID found for editing.");
-            return;
-          }
 
           try {
-            await fetch(`${apiUrl}/${editingSellerId}`, {
+            const response = await fetch(`${apiUrl}/${editingSellerId}`, {
               method: "PUT",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ username: name, email, store_info: { store_name: storeName, full_address: address, nik } }),
+              body: JSON.stringify({ username: name, email }),
             });
+
+            if (!response.ok) throw new Error("Failed to update seller");
+
+            alert("Seller updated successfully!");
             editModal.classList.add("hidden");
             fetchSellers();
           } catch (error) {
@@ -275,28 +284,12 @@
           }
         });
 
-        // Delete seller
-        sellerTable.addEventListener("click", async (e) => {
-          if (e.target.classList.contains("delete-btn")) {
-            const id = e.target.dataset.id;
-
-            try {
-              await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
-              fetchSellers();
-            } catch (error) {
-              console.error("Error deleting seller:", error);
-            }
-          }
-        });
-
-        // Close modal
         closeModal.addEventListener("click", () => {
           editModal.classList.add("hidden");
         });
 
-        // Initial fetch
         fetchSellers();
       });
-   </script>
-</body>
+    </script>
+  </body>
 </html>
