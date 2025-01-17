@@ -1,67 +1,151 @@
-// customers.js
-const customerForm = document.getElementById('customer-form');
-const customerTable = document.getElementById('customer-table').getElementsByTagName('tbody')[0];
-let editingRow = null;
+document.addEventListener("DOMContentLoaded", () => {
+  const apiUrl = "http://localhost:3000/customers";
+  const customerTable = document
+    .getElementById("customer-table")
+    .querySelector("tbody");
+  const customerForm = document.getElementById("customer-form");
+  const editModal = document.getElementById("edit-modal");
+  const editForm = document.getElementById("edit-form");
+  const closeModal = document.getElementById("close-modal");
 
-// Handle form submission to add or update customer
-customerForm.addEventListener('submit', function(e) {
-    e.preventDefault();
+  let editingCustomerId = null;
 
-    const name = document.getElementById('customer-name').value;
-    const email = document.getElementById('customer-email').value;
-    const phone = document.getElementById('customer-phone').value;
+  // Fetch and display customers
+  async function fetchCustomers() {
+    try {
+      const response = await fetch(apiUrl);
+      const customers = await response.json();
 
-    if (editingRow) {
-        // Update the existing row
-        editingRow.cells[0].innerText = name;
-        editingRow.cells[1].innerText = email;
-        editingRow.cells[2].innerText = phone;
-
-        // Reset editing mode
-        editingRow = null;
-        customerForm.reset();
-        document.querySelector('#customer-form button').innerText = 'Add Customer';
-    } else {
-        // Create new row
-        const newRow = customerTable.insertRow();
-        newRow.innerHTML = `
-            <td>${name}</td>
-            <td>${email}</td>
-            <td>${phone}</td>
-            <td>
-                <button class="edit">Edit</button>
-                <button class="delete">Delete</button>
-            </td>
-        `;
-
-        // Add event listeners for editing and deleting
-        addEventListeners(newRow);
-        customerForm.reset();
+      customerTable.innerHTML = customers
+        .map(
+          (customer) => `
+                <tr>
+                  <td>${customer.username}</td>
+                  <td>${customer.email}</td>
+                  <td>${customer.phone || "N/A"}</td>
+                  <td>
+                    <button class="edit-btn" data-id="${
+                      customer._id
+                    }">Edit</button>
+                    <button class="delete-btn" data-id="${
+                      customer._id
+                    }">Delete</button>
+                    <button class="suspend-btn" data-id="${customer._id}" ${
+            customer.suspended ? "disabled" : ""
+          }>Suspend</button>
+                    <button class="unsuspend-btn" data-id="${customer._id}" ${
+            !customer.suspended ? "disabled" : ""
+          }>Unsuspend</button>
+                  </td>
+                </tr>`
+        )
+        .join("");
+    } catch (error) {
+      console.error("Error fetching customers:", error);
     }
+  }
+
+  // Add new customer
+  customerForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("customer-name").value;
+    const email = document.getElementById("customer-email").value;
+    const phone = document.getElementById("customer-phone").value;
+
+    try {
+      await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: name, email, phone }),
+      });
+      customerForm.reset();
+      fetchCustomers();
+    } catch (error) {
+      console.error("Error adding customer:", error);
+    }
+  });
+
+  // Edit customer
+  customerTable.addEventListener("click", (e) => {
+    if (e.target.classList.contains("edit-btn")) {
+      editingCustomerId = e.target.dataset.id;
+
+      const row = e.target.closest("tr");
+      const name = row.children[0].textContent;
+      const email = row.children[1].textContent;
+      const phone = row.children[2].textContent;
+
+      document.getElementById("edit-name").value = name;
+      document.getElementById("edit-email").value = email;
+      document.getElementById("edit-phone").value = phone;
+
+      editModal.classList.remove("hidden");
+    }
+  });
+
+  editForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = document.getElementById("edit-name").value;
+    const email = document.getElementById("edit-email").value;
+    const phone = document.getElementById("edit-phone").value;
+
+    try {
+      await fetch(`${apiUrl}/${editingCustomerId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: name, email, phone }),
+      });
+      editModal.classList.add("hidden");
+      fetchCustomers();
+    } catch (error) {
+      console.error("Error updating customer:", error);
+    }
+  });
+
+  // Delete customer
+  customerTable.addEventListener("click", async (e) => {
+    if (e.target.classList.contains("delete-btn")) {
+      const id = e.target.dataset.id;
+
+      try {
+        await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
+        fetchCustomers();
+      } catch (error) {
+        console.error("Error deleting customer:", error);
+      }
+    }
+  });
+
+  // Close modal
+  closeModal.addEventListener("click", () => {
+    editModal.classList.add("hidden");
+  });
+
+  // Initial fetch
+  fetchCustomers();
 });
+customerTable.addEventListener("click", async (e) => {
+  const id = e.target.dataset.id;
 
-// Add event listeners to edit and delete buttons
-function addEventListeners(row) {
-    const editBtn = row.querySelector('.edit');
-    const deleteBtn = row.querySelector('.delete');
+  if (e.target.classList.contains("suspend-btn")) {
+    try {
+      await fetch(`http://localhost:3000/users/suspend/${id}`, {
+        method: "PATCH",
+      });
+      fetchCustomers();
+    } catch (error) {
+      console.error("Error suspending customer:", error);
+    }
+  }
 
-    // Edit functionality
-    editBtn.addEventListener('click', function() {
-        const cells = row.getElementsByTagName('td');
-        document.getElementById('customer-name').value = cells[0].innerText;
-        document.getElementById('customer-email').value = cells[1].innerText;
-        document.getElementById('customer-phone').value = cells[2].innerText;
-
-        // Set the row being edited
-        editingRow = row;
-        document.querySelector('#customer-form button').innerText = 'Update Customer';
-    });
-
-    // Delete functionality
-    deleteBtn.addEventListener('click', function() {
-        row.remove();
-    });
-}
-
-// Initial setup: Add event listeners to existing rows (if any)
-[...customerTable.rows].forEach(addEventListeners);
+  if (e.target.classList.contains("unsuspend-btn")) {
+    try {
+      await fetch(`http://localhost:3000/users/unsuspend/${id}`, {
+        method: "PATCH",
+      });
+      fetchCustomers();
+    } catch (error) {
+      console.error("Error unsuspending customer:", error);
+    }
+  }
+});
