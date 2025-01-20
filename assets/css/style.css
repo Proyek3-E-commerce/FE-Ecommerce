@@ -1476,7 +1476,7 @@ body {
   .header .search-submit ion-icon { --ionicon-stroke-width: 40px; }
 
   .header .logo {
-    margin-right: 160px; /* Margin di sisi kanan */
+    margin-right: 70px; /* Margin di sisi kanan */
   }
 
   .header-actions {
