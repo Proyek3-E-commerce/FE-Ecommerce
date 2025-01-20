@@ -134,6 +134,8 @@ function validateLogin(event) {
 
       if (data.status === "success") {
         localStorage.setItem("token", data.token); // Simpan token di localStorage
+        localStorage.setItem("user_id", data.user_id);
+        localStorage.setItem("role", data.role);
 
         // Redirect berdasarkan role
         if (data.role === "admin") {
@@ -143,6 +145,13 @@ function validateLogin(event) {
         } else {
           window.location.href = "index.html";
         }
+        document.addEventListener("DOMContentLoaded", () => {
+          const role = localStorage.getItem("role");
+          if (role !== "customer") {
+            alert("You must be logged in as a customer to access this page.");
+            window.location.href = "login.html"; // Redirect ke halaman login
+          }
+        })        
       } else {
         alert("Login gagal: " + data.message);
       }
