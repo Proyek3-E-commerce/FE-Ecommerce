@@ -343,40 +343,63 @@
             const products = data.data;
             const container = document.getElementById(containerId);
             container.innerHTML = products
-              .map(product => {
-                return `
-                  <li class="scrollbar-item">
-                    <div class="shop-card">
-                      <div class="card-banner img-holder" style="--width: 540; --height: 720">
-                        <a href="ProductPage/index.html?productId=${product.id}" class="product-link">
-                          <img src="ProductPage/${product.image}" width="540" height="720" loading="lazy" alt="${product.name}" class="img-cover" />
-                        </a>
-                        ${product.discount > 0 ? `<span class="badge" aria-label="${product.discount}% off">-${product.discount}%</span>` : ''}
-                        <div class="card-actions">
-                          <button class="action-btn" aria-label="add to cart" onclick="addToCart(${JSON.stringify(product)})">
-  <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>
-</button>
+  .map((product) => {
+    const imageUrl = product.image
+      ? `http://localhost:3000/${product.image.replace("./", "")}`
+      : "./images/default-product.png";
+    const name = product.name || "Unknown Product";
+    const price = product.price || 0;
+    const discount = product.discount || 0;
+    const rating = Math.round(product.rating) || 0; // Pastikan rating adalah angka
+    const reviews = product.reviews || 0;
 
-                        </div>
-                      </div>
-                      <div class="card-content">
-                        <div class="price">
-                          ${product.discount > 0 ? `<del class="del">Rp.${(product.price).toLocaleString()}</del>` : ''}
-                          <span class="span">Rp.${((product.price * (1 - product.discount / 100))).toLocaleString()}</span>
-                        </div>
-                        <h3><a href="ProductPage/index.html?productId=${product.id}" class="card-title">${product.name}</a></h3>
-                        <div class="card-rating">
-                          <div class="rating-wrapper" aria-label="${product.rating} star rating">
-                            ${Array(Math.round(product.rating)).fill('<ion-icon name="star" aria-hidden="true"></ion-icon>').join('')}
-                          </div>
-                          <p class="rating-text">${product.reviews} reviews</p>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                `;
-              })
-              .join('');
+    return `
+      <li class="scrollbar-item">
+        <div class="shop-card">
+          <div class="card-banner img-holder" style="--width: 540; --height: 720">
+            <a href="ProductPage/index.html?productId=${product.id}" class="product-link">
+              <img src="${imageUrl}" width="540" height="720" loading="lazy" alt="${name}" class="img-cover" />
+            </a>
+            ${
+              discount > 0
+                ? `<span class="badge" aria-label="${discount}% off">-${discount}%</span>`
+                : ""
+            }
+            <div class="card-actions">
+              <button class="action-btn" aria-label="add to cart" onclick="addToCart(${JSON.stringify(
+                product
+              )})">
+                <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>
+              </button>
+            </div>
+          </div>
+          <div class="card-content">
+            <div class="price">
+              ${
+                discount > 0
+                  ? `<del class="del">Rp.${price.toLocaleString()}</del>`
+                  : ""
+              }
+              <span class="span">Rp.${(
+                price * (1 - discount / 100)
+              ).toLocaleString()}</span>
+            </div>
+            <h3><a href="ProductPage/index.html?productId=${product.id}" class="card-title">${name}</a></h3>
+            <div class="card-rating">
+              <div class="rating-wrapper" aria-label="${rating} star rating">
+                ${Array(rating)
+                  .fill('<ion-icon name="star" aria-hidden="true"></ion-icon>')
+                  .join("")}
+              </div>
+              <p class="rating-text">${reviews} reviews</p>
+            </div>
+          </div>
+        </div>
+      </li>
+    `;
+  })
+  .join("");
+
           } catch (error) {
             console.error("Error fetching products:", error);
           }
@@ -398,7 +421,6 @@
         
       
         // Fetch products for both sections
-        fetchProducts('http://localhost:3000/products/under100k', 'under-100k-list');
         fetchProducts('http://localhost:3000/products', 'bestsellers-list'); // Menggunakan endpoint 'products' untuk semua produk
       </script>     
   
