@@ -36,6 +36,7 @@
   </head>
 
   <body id="top">
+    
     <!-- 
     - #HEADER
   -->
@@ -67,7 +68,6 @@
               <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
             </button>
           </div>
-
           <a href="#" class="logo">
             <img
               src="./assets/images/logo.png"
@@ -77,10 +77,76 @@
             />
           </a>
 
-          <div class="header-actions">
-            <a href="login.html" class="header-action-btn" aria-label="user">
+          <div class="auth-container">
+            <a href="login.html" class="header-action-btn" id="auth-icon" aria-label="user">
               <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
             </a>
+            <div class="auth-menu" id="auth-menu">
+              <!-- Menu akan diisi oleh JavaScript -->
+            </div>
+          </div>          
+            <script> 
+              document.addEventListener("DOMContentLoaded", () => {
+                const authIcon = document.getElementById("auth-icon");
+                const authMenu = document.getElementById("auth-menu");
+              
+                // Fungsi untuk memeriksa status login
+                const isLoggedIn = () => {
+                  const token = localStorage.getItem("token");
+                  return token !== null;
+                };
+              
+                // Fungsi logout
+                const logout = () => {
+                  console.log("Logging out...");
+              
+                  // Hapus token
+                  localStorage.removeItem("token");
+              
+                  // Verifikasi penghapusan token
+                  if (!localStorage.getItem("token")) {
+                    console.log("Token removed successfully.");
+                  } else {
+                    console.error("Failed to remove token.");
+                  }
+              
+                  // Tampilkan pesan logout
+                  alert("Logout successful!");
+              
+                  // Redirect ke halaman login
+                  window.location.href = "login.html";
+                };
+              
+                // Update menu dropdown berdasarkan status login
+                const updateAuthMenu = () => {
+                  if (isLoggedIn()) {
+                    // Jika sudah login
+                    authMenu.innerHTML = `
+                      <a href="#" id="logout-btn">Logout</a>
+                    `;
+              
+                    // Tambahkan event listener untuk logout
+                    const logoutBtn = document.getElementById("logout-btn");
+                    if (logoutBtn) {
+                      logoutBtn.addEventListener("click", (event) => {
+                        event.preventDefault(); // Hindari navigasi default
+                        logout(); // Jalankan fungsi logout
+                      });
+                    } else {
+                      console.error("Logout button not found.");
+                    }
+                  } else {
+                    // Jika belum login
+                    authMenu.innerHTML = `
+                      <a href="login.html">Login</a>
+                    `;
+                  }
+                };
+              
+                // Inisialisasi menu
+                updateAuthMenu();
+              });              
+            </script>
 
             <!-- Ikon Keranjang -->
             <a

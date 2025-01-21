@@ -28,15 +28,25 @@
       }
 
       /* Header Styling */
-
+      .header-top {
+        display: flex;
+        justify-content: space-between; /* Pastikan elemen tersebar di sisi kiri dan kanan */
+        align-items: center; /* Pusatkan secara vertikal */
+      }
+      
+      .header .logo {
+        
+        transform: translateX(-120px); /* Geser logo ke kiri sebesar 50px */
+      }
+      
       /* Product Detail Card */
       .product-detail-card {
-        max-width: 960px;
-        margin: 30px auto;
-        background-color: #fff;
+        max-width: 800px; /* Reduced card width */
+        margin: 10px auto; /* Adjusted margin for spacing */
+        background-color: #ffffff;
         border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 4px 6px rgb(247, 245, 245);
         display: flex;
         flex-wrap: wrap;
       }
@@ -44,8 +54,8 @@
       /* Product Image */
       .product-image {
         flex: 1;
-        min-width: 300px;
-        max-width: 50%;
+        min-width: 250px;
+        max-width: 40%;
         background-color: #f4f4f4;
         display: flex;
         justify-content: center;
@@ -53,54 +63,54 @@
       }
 
       .product-image img {
-        max-width: 100%;
+        max-width: 180%;
         height: auto;
         object-fit: contain;
         border-radius: 8px;
-        padding: 10px;
+        padding: 50px;
       }
 
       /* Product Information */
       .product-info {
         flex: 1;
-        padding: 20px;
+        padding: 16px; /* Reduced padding */
         display: flex;
         flex-direction: column;
         justify-content: space-between;
       }
 
       .product-title {
-        font-size: 2rem;
+        font-size: 1.8rem; /* Reduced title size */
         font-weight: bold;
         margin-bottom: 12px;
       }
 
       .product-price {
         color: #e63946;
-        font-size: 1.8rem;
+        font-size: 1.5rem; /* Reduced price size */
         font-weight: bold;
-        margin: 10px 0;
+        margin: 8px 0; /* Adjusted margin */
       }
 
       .product-price del {
         color: #777;
         margin-right: 10px;
-        font-size: 1.2rem;
+        font-size: 1.1rem; /* Reduced del size */
       }
 
       .product-description {
-        margin: 16px 0;
-        font-size: 1rem;
+        margin: 12px 0; /* Adjusted margin */
+        font-size: 1.2rem; /* Reduced description size */
         line-height: 1.5;
         color: #555;
       }
 
       .product-rating {
-        margin: 16px 0;
+        margin: 12px 0; /* Adjusted margin */
       }
 
       .product-rating span {
-        font-size: 1.1rem;
+        font-size: 1rem; /* Reduced rating size */
         font-weight: bold;
       }
 
@@ -111,20 +121,20 @@
       /* Store Info */
       .store-info {
         background-color: #f9f9f9;
-        padding: 16px;
+        padding: 12px; /* Reduced padding */
         border-top: 1px solid #e0e0e0;
-        margin-top: 20px;
+        margin-top: 10px; /* Adjusted margin */
       }
 
       .store-info h3 {
-        font-size: 1.2rem;
+        font-size: 1.5rem; /* Reduced store info title size */
         font-weight: bold;
-        margin-bottom: 8px;
+        margin-bottom: 15px;
       }
 
       .store-info p {
-        margin: 5px 0;
-        font-size: 1rem;
+        margin: 10px 0;
+        font-size: 1.2rem; /* Reduced store info text size */
       }
 
       /* Add to Cart Button */
@@ -132,11 +142,11 @@
         background-color: #ff5722;
         color: white;
         border: none;
-        padding: 12px 20px;
+        padding: 10px 16px; /* Reduced padding */
         border-radius: 4px;
         cursor: pointer;
-        font-size: 1rem;
-        margin-top: 20px;
+        font-size: 0.9rem; /* Reduced button text size */
+        margin-top: 16px; /* Adjusted margin */
         align-self: flex-start;
       }
 
@@ -166,11 +176,11 @@
         }
 
         .product-title {
-          font-size: 1.5rem;
+          font-size: 2rem;
         }
 
         .product-price {
-          font-size: 1.5rem;
+          font-size: 1.2rem;
         }
       }
     </style>
@@ -212,7 +222,7 @@
             </button>
           </div>
 
-          <a href="#" class="logo">
+          <a href="/index.html" class="logo">
             <img
               src="../assets/images/logo.png"
               width="176"
@@ -222,10 +232,6 @@
           </a>
 
           <div class="header-actions">
-            <a href="login.html" class="header-action-btn" aria-label="user">
-              <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
-            </a>
-
             <!-- Ikon Keranjang -->
             <a
               class="header-action-btn"
@@ -272,8 +278,8 @@
         productContainer.innerHTML = `
     <div class="product-detail-card">
       <!-- Product Images -->
-      <div class="product-images">
-        <div class="main-image">
+      <div class="product-image img">
+        <div class="product-image img">
           <img src="${imageUrl}" alt="${product.name}" loading="lazy" />
         </div>
         
@@ -304,10 +310,6 @@
             <span>${store.store_name}</span>
           </a>
           <p>${store.full_address}</p>
-          <p>Email: <a href="mailto:${store.seller_email}">${
-          store.seller_email
-        }</a></p>
-          <p>Status Toko: ${store.store_status}</p>
         </div>
 
         <!-- Add to Cart Button -->

@@ -36,10 +36,10 @@
           <span class="material-symbols-sharp">receipt_long</span>
           <h3>Products</h3>
        </a>
-           <a href="logout.html">
-              <span class="material-symbols-sharp">logout</span>
-              <h3>Logout</h3>
-           </a>
+       <a href="logout.html" id="logout-link">
+         <span class="material-symbols-sharp">logout</span>
+         <h3>Logout</h3>
+       </a>       
          </div>
       </aside>
       <main id="content">
@@ -119,6 +119,35 @@
         fetchCount("customers", "total-customers");
         fetchCount("sellers", "total-sellers");
         fetchCount("products", "total-products");
+
+        // Logika Logout
+    const logoutLink = document.getElementById("logout-link");
+
+    const logout = () => {
+      console.log("Logging out...");
+
+      // Hapus token dari localStorage
+      localStorage.removeItem("token");
+
+      // Verifikasi penghapusan token
+      if (!localStorage.getItem("token")) {
+        console.log("Token removed successfully.");
+        alert("Logout successful!");
+        // Redirect ke halaman login
+        window.location.href = "/login.html";
+      } else {
+        console.error("Failed to remove token.");
+      }
+    };
+
+    if (logoutLink) {
+      logoutLink.addEventListener("click", (event) => {
+        event.preventDefault(); // Mencegah navigasi default
+        logout(); // Jalankan fungsi logout
+      });
+    } else {
+      console.error("Logout link not found.");
+    }
       });
    </script>
 </body>

@@ -371,6 +371,7 @@ body {
   background-color: var(--white);
   padding-block: 26px;
   z-index: 4;
+  
 }
 
 .header-top.active {
@@ -389,7 +390,6 @@ body {
 
 .header-top .container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
   gap: 20px;
 }
@@ -1476,12 +1476,11 @@ body {
   .header .search-submit ion-icon { --ionicon-stroke-width: 40px; }
 
   .header .logo {
-    margin-right: 70px; /* Margin di sisi kanan */
+    margin-right: 100px; /* Margin di sisi kanan */
   }
 
   .header-actions {
     display: flex;
-    align-items: center;
     gap: 40px;
   }
 
@@ -1713,4 +1712,60 @@ footer {
 footer p {
   font-size: 1rem;
   color: #666;
+}
+
+.auth-container {
+  position: relative;
+  display: inline-block;
+}
+
+.auth-menu {
+  display: none; /* Tersembunyi secara default */
+  position: absolute;
+  top: 120%; /* Tempatkan menu di bawah ikon */
+  right: 0;
+  background-color: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  z-index: 1000;
+  text-align: center;
+}
+
+.auth-menu a {
+  text-decoration: none;
+  color: #333;
+  display: block;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+.auth-menu a:hover {
+  background-color: #f4f4f4;
+}
+
+.auth-container:hover .auth-menu {
+  display: block; /* Tampilkan menu saat kursor diarahkan */
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between; /* Pastikan elemen tersebar di sisi kiri dan kanan */
+  align-items: center; /* Pusatkan secara vertikal */
+}
+
+.header .logo {
+  margin: 0 auto; /* Pusatkan logo secara horizontal */
+  transform: translateX(-50px); /* Geser logo ke kiri sebesar 50px */
+}
+
+.header-actions {
+  flex: 0; /* Membuat elemen ini mengambil ruang yang tersedia */
+}
+
+.header-actions {
+  display: flex;
+  justify-content: flex-end; /* Tempatkan elemen di sisi kanan */
+  gap: 20px; /* Beri jarak antar elemen */
 }
