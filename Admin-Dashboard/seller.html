@@ -69,6 +69,58 @@
         flex: 1;
         margin: 0 5px;
       }
+      .photo-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+}
+
+.photo-modal .modal-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+}
+
+.photo-modal .modal-content {
+  position: relative;
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  text-align: center;
+  z-index: 1001;
+}
+
+.photo-modal .close-modal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ff4d4d;
+  border: none;
+  border-radius: 50%;
+  color: white;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 30px;
+  text-align: center;
+}
+
+.photo-modal img {
+  max-width: 90%;
+  max-height: 90%;
+  display: block;
+  margin: 0 auto;
+}
+
     </style>
   </head>
   <body>
@@ -160,6 +212,7 @@
                 <th>Full Address</th>
                 <th>NIK</th>
                 <th>Status Store</th>
+                <th>Photo</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -170,48 +223,56 @@
         </div>
       </main>
 
-      <!-- Edit Modal -->
-      <div id="edit-modal" class="modal hidden">
-        <div class="modal-content">
-          <h2>Edit Seller</h2>
-          <form id="edit-form">
-            <input
-            type="text"
-            id="edit-name"
-            placeholder="Seller Name"
-            required
-          />
+     <!-- Edit Modal -->
+     <div id="edit-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2>Edit Seller</h2>
+        <form id="edit-form">
           <input
-            type="email"
-            id="edit-email"
-            placeholder="Seller Email"
-            required
+          type="text"
+          id="edit-name"
+          placeholder="Seller Name"
+          required
+        />
+        <input
+          type="email"
+          id="edit-email"
+          placeholder="Seller Email"
+          required
+        />
+        <input
+          type="text"
+          id="edit-store-name"
+          placeholder="Store Name"
+          required
+        />
+        <input
+          type="text"
+          id="edit-full-address"
+          placeholder="Full Address"
+          required
+        />
+        <input
+          type="text"
+          id="edit-nik"
+          placeholder="NIK"
+          required
+        />
+          <img
+            id="edit-photo"
+            src=""
+            alt="Seller Photo"
+            style="width: 100px; height: 100px; object-fit: cover; border-radius: 4px;"
           />
-          <input
-            type="text"
-            id="edit-store-name"
-            placeholder="Store Name"
-            required
-          />
-          <input
-            type="text"
-            id="edit-full-address"
-            placeholder="Full Address"
-            required
-          />
-          <input
-            type="text"
-            id="edit-nik"
-            placeholder="NIK"
-            required
-          />
-            <div class="modal-actions">
-              <button type="submit">Save Changes</button>
-              <button type="button" id="close-modal">Cancel</button>
-            </div>
-          </form>
-        </div>
+        
       </div>
+      <div class="modal-actions">
+        <button type="submit">Save Changes</button>
+        <button type="button" id="close-modal">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
     </div>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
@@ -223,58 +284,116 @@
         const editModal = document.getElementById("edit-modal");
         const editForm = document.getElementById("edit-form");
         const closeModal = document.getElementById("close-modal");
-
+    
         let editingSellerId = null;
-
+    
+        // Fetch all sellers
         async function fetchSellers() {
-          try {
-            const response = await fetch(apiUrl);
-            if (!response.ok) throw new Error("Failed to fetch sellers");
+  try {
+    const response = await fetch(apiUrl);
 
-            const data = await response.json();
-            renderSellers(data.data);
-          } catch (error) {
-            console.error("Error fetching sellers:", error);
-          }
-        }
+    // Periksa apakah respons berhasil
+    if (!response.ok) {
+      const errorData = await response.json(); // Cobalah membaca pesan error dari server jika ada
+      throw new Error(
+        `Failed to fetch sellers: ${response.status} - ${errorData.message || response.statusText}`
+      );
+    }
 
-        function renderSellers(users) {
-          sellerTable.innerHTML = users
-            .filter(user => user.roles.includes("seller"))
-            .map(user => {
-              const isIncomplete =
-                !user.store_info?.store_name ||
-                !user.store_info?.full_address ||
-                !user.store_info?.nik;
+    const data = await response.json();
 
-              return `
-                <tr class="${isIncomplete ? "incomplete" : ""}">
-                  <td>${user.username}</td>
-                  <td>${user.email}</td>
-                  <td>${user.store_info?.store_name || "-"}</td>
-                  <td>${user.store_info?.full_address || "-"}</td>
-                  <td>${user.store_info?.nik || "-"}</td>
-                  <td>${user.store_status || "-"}</td>
-                  <td>
-                    <button class="edit-btn" data-id="${user.id}">Edit</button>
-                    <button class="delete-btn" data-id="${user.id}">Delete</button>
-                    <button class="approve-btn" data-id="${user.id}">Approve</button>
-                    <button class="reject-btn" data-id="${user.id}">Reject</button>
-                  </td>
-                </tr>
-              `;
-            })
-            .join("");
-        }
+    // Validasi struktur data
+    if (!data || !Array.isArray(data.data)) {
+      throw new Error("Invalid response format: Expected an array of sellers in 'data.data'");
+    }
 
+    // Panggil fungsi untuk render data sellers
+    renderSellers(data.data);
+  } catch (error) {
+    console.error("Error fetching sellers:", error.message);
+
+    // Tampilkan pesan error di UI (opsional)
+    sellerTable.innerHTML = `<tr><td colspan="8">Error fetching sellers: ${error.message}</td></tr>`;
+  }
+}
+function renderSellers(users) {
+  sellerTable.innerHTML = users
+    .filter(user => Array.isArray(user.roles) && user.roles.includes("seller"))
+    .map(user => {
+      const isIncomplete =
+        !user.store_info?.store_name ||
+        !user.store_info?.full_address ||
+        !user.store_info?.nik;
+
+      // Tentukan URL gambar
+      const photoUrl = user.store_info?.photo_path
+        ? `http://localhost:3000/${user.store_info.photo_path.replace(/\\/g, "/")}`
+        : "./images/default-photo.png"; // Gambar default jika tidak ada foto
+
+      return `
+        <tr class="${isIncomplete ? "incomplete" : ""}">
+          <td>${user.username || "-"}</td>
+          <td>${user.email || "-"}</td>
+          <td>${user.store_info?.store_name || "-"}</td>
+          <td>${user.store_info?.full_address || "-"}</td>
+          <td>${user.store_info?.nik || "-"}</td>
+          <td>${user.store_status || "-"}</td>
+          <td>
+            <img 
+              src="${photoUrl}" 
+              alt="Photo" 
+              style="width: 50px; height: 50px; object-fit: cover; cursor: pointer;" 
+              class="clickable-photo" 
+              data-url="${photoUrl}" 
+            >
+          </td>
+          <td>
+            <button class="edit-btn" data-id="${user.id}">Edit</button>
+            <button class="delete-btn" data-id="${user.id}">Delete</button>
+            <button class="approve-btn" data-id="${user.id}">Approve</button>
+            <button class="reject-btn" data-id="${user.id}">Reject</button>
+          </td>
+        </tr>
+      `;
+    })
+    .join("");
+
+  // Tambahkan event listener untuk semua foto
+  document.querySelectorAll(".clickable-photo").forEach(photo => {
+    photo.addEventListener("click", (e) => {
+      const photoUrl = e.target.dataset.url;
+      showPhotoModal(photoUrl); // Gunakan nama fungsi yang benar
+    });
+  });
+}
+
+// Show photo modal
+function showPhotoModal(photoUrl) {
+  const modal = document.createElement("div");
+  modal.className = "photo-modal";
+  modal.innerHTML = `
+    <div class="modal-overlay"></div>
+    <div class="modal-content">
+      <img src="${photoUrl}" alt="Large Photo" style="max-width: 90%; max-height: 90%; border-radius: 8px;">
+      <button class="close-modal" style="margin-top: 10px;">Close</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  // Tambahkan event listener untuk menutup modal
+  modal.querySelector(".modal-overlay").addEventListener("click", () => modal.remove());
+  modal.querySelector(".close-modal").addEventListener("click", () => modal.remove());
+}
+
+        // Add new seller
         sellerForm.addEventListener("submit", async (e) => {
           e.preventDefault();
           const name = document.getElementById("add-name").value;
           const email = document.getElementById("add-email").value;
-          const password = document.getElementById("add-password").value;
           const storeName = document.getElementById("add-store-name").value;
           const fullAddress = document.getElementById("add-full-address").value;
           const nik = document.getElementById("add-nik").value;
+    
           try {
             const response = await fetch(apiUrl, {
               method: "POST",
@@ -282,16 +401,12 @@
               body: JSON.stringify({
                 username: name,
                 email,
-                store_info: {
-                  store_name: storeName,
-                  full_address: fullAddress,
-                  nik: nik
-                }
+                store_info: { store_name: storeName, full_address: fullAddress, nik },
               }),
             });
-
+    
             if (!response.ok) throw new Error("Failed to add seller");
-
+    
             alert("Seller added successfully!");
             sellerForm.reset();
             fetchSellers();
@@ -299,26 +414,29 @@
             console.error("Error adding seller:", error);
           }
         });
-
+    
+        // Handle actions for sellers
         sellerTable.addEventListener("click", async (e) => {
           const sellerId = e.target.getAttribute("data-id");
           if (!sellerId) return;
-
+    
           if (e.target.classList.contains("edit-btn")) {
             editingSellerId = sellerId;
             const row = e.target.closest("tr");
             const name = row.children[0].textContent;
             const email = row.children[1].textContent;
-            const store_name = row.children[2].textContent;
-            const full_address = row.children[3].textContent;
+            const storeName = row.children[2].textContent;
+            const fullAddress = row.children[3].textContent;
             const nik = row.children[4].textContent;
-
+            const photoUrl = row.querySelector("img").src;
+    
             document.getElementById("edit-name").value = name;
             document.getElementById("edit-email").value = email;
-            document.getElementById("edit-store-name").value = store_name;
-            document.getElementById("edit-full-address").value = full_address;
+            document.getElementById("edit-store-name").value = storeName;
+            document.getElementById("edit-full-address").value = fullAddress;
             document.getElementById("edit-nik").value = nik;
-
+            document.getElementById("edit-photo").src = photoUrl;
+    
             editModal.classList.remove("hidden");
           } else if (e.target.classList.contains("approve-btn")) {
             if (confirm("Are you sure you want to approve this seller?")) {
@@ -326,13 +444,10 @@
                 const response = await fetch(approveUrl, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    user_id: sellerId,
-                    status: "approved"
-                  }),
+                  body: JSON.stringify({ user_id: sellerId, status: "approved" }),
                 });
                 if (!response.ok) throw new Error("Failed to approve seller");
-
+    
                 alert("Seller approved successfully!");
                 fetchSellers();
               } catch (error) {
@@ -345,32 +460,45 @@
                 const response = await fetch(rejectUrl, {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({
-                    user_id: sellerId,
-                    status: "rejected"
-                  }),
+                  body: JSON.stringify({ user_id: sellerId, status: "rejected" }),
                 });
                 if (!response.ok) throw new Error("Failed to reject seller");
-
+    
                 alert("Seller rejected successfully!");
                 fetchSellers();
               } catch (error) {
                 console.error("Error rejecting seller:", error);
               }
             }
+          } else if (e.target.classList.contains("delete-btn")) {
+            if (confirm("Are you sure you want to delete this seller?")) {
+              try {
+                const response = await fetch(`${apiUrl}/${sellerId}`, {
+                  method: "DELETE",
+                });
+    
+                if (!response.ok) throw new Error("Failed to delete seller");
+    
+                alert("Seller deleted successfully!");
+                fetchSellers();
+              } catch (error) {
+                console.error("Error deleting seller:", error);
+              }
+            }
           }
         });
-
+    
+        // Update seller details
         editForm.addEventListener("submit", async (e) => {
           e.preventDefault();
           if (!editingSellerId) return;
-
+    
           const name = document.getElementById("edit-name").value;
           const email = document.getElementById("edit-email").value;
           const storeName = document.getElementById("edit-store-name").value;
           const fullAddress = document.getElementById("edit-full-address").value;
           const nik = document.getElementById("edit-nik").value;
-
+    
           try {
             const response = await fetch(`${apiUrl}/${editingSellerId}`, {
               method: "PUT",
@@ -378,16 +506,12 @@
               body: JSON.stringify({
                 username: name,
                 email,
-                store_info: {
-                  store_name: storeName,
-                  full_address: fullAddress,
-                  nik: nik
-                }
+                store_info: { store_name: storeName, full_address: fullAddress, nik },
               }),
             });
-
+    
             if (!response.ok) throw new Error("Failed to update seller");
-
+    
             alert("Seller updated successfully!");
             editModal.classList.add("hidden");
             fetchSellers();
@@ -395,43 +519,14 @@
             console.error("Error updating seller:", error);
           }
         });
-
+    
         closeModal.addEventListener("click", () => {
           editModal.classList.add("hidden");
         });
-
-         // Handle "Delete" button click
-         sellerTable.addEventListener("click", async (e) => {
-          if (e.target.classList.contains("delete-btn")) {
-            const sellerId = e.target.getAttribute("data-id");
-
-            if (!sellerId) {
-              alert("Seller ID is missing.");
-              return;
-            }
-
-            if (confirm("Are you sure you want to delete this Seller?")) {
-              try {
-                const response = await fetch(`${apiUrl}/${sellerId}`, {
-                  method: "DELETE",
-                });
-
-                if (response.ok) {
-                  alert("Seller deleted successfully!");
-                  fetchSellers();
-                } else {
-                  const errorData = await response.json();
-                  alert(`Error: ${errorData.message}`);
-                }
-              } catch (error) {
-                console.error("Error deleting Seller:", error);
-              }
-            }
-          }
-        });
-
+    
         fetchSellers();
       });
     </script>
+    
   </body>
 </html>

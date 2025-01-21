@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Glowing - Reveal The Beauty of Skin</title>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- 
     - favicon
@@ -92,14 +93,93 @@
               <span class="btn-badge" id="cart-count">0</span>
             </a>
             <a
-    class="header-action-btn"
-    href="become.html"
-    aria-label="store registration"
-  >
-    <ion-icon name="storefront-outline" aria-hidden="true"></ion-icon>
-  </a>
+            class="header-action-btn"
+            href="#"
+            aria-label="store registration"
+            id="store-registration-btn"
+          >
+            <ion-icon name="storefront-outline" aria-hidden="true"></ion-icon>
+          </a>
           </div>
-
+          <script>
+            document.addEventListener("DOMContentLoaded", async () => {
+              const storeRegistrationBtn = document.getElementById("store-registration-btn");
+        
+              storeRegistrationBtn.addEventListener("click", async (e) => {
+                e.preventDefault();
+        
+                try {
+                  const token = localStorage.getItem("token");
+                  if (!token) {
+                    Swal.fire({
+                      icon: "warning",
+                      title: "Login Required",
+                      text: "You need to log in first!",
+                      confirmButtonText: "Go to Login",
+                    }).then(() => {
+                      window.location.href = "login.html";
+                    });
+                    return;
+                  }
+        
+                  const base64Url = token.split(".")[1];
+                  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+                  const decodedToken = JSON.parse(atob(base64));
+                  const userId = decodedToken.user_id;
+        
+                  const response = await fetch(`http://localhost:3000/users/${userId}`, {
+                    method: "GET",
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                    },
+                  });
+        
+                  if (!response.ok) {
+                    throw new Error("Failed to fetch user data.");
+                  }
+        
+                  const { data: userData } = await response.json();
+                  const storeStatus = userData.store_status;
+        
+                  if (!storeStatus || storeStatus === "not_available") {
+                    window.location.href = "become.html";
+                  } else if (storeStatus === "pending") {
+                    Swal.fire({
+                      icon: "info",
+                      title: "Application Pending",
+                      text: "Your store registration is still under review.",
+                      confirmButtonText: "OK",
+                    });
+                  } else if (storeStatus === "rejected") {
+                    Swal.fire({
+                      icon: "error",
+                      title: "Application Rejected",
+                      text: "Your store registration has been rejected by the admin.",
+                      confirmButtonText: "OK",
+                    });
+                  } else if (storeStatus === "approved") {
+                    window.location.href = "penjual-dashboard/index.html";
+                  } else {
+                    Swal.fire({
+                      icon: "warning",
+                      title: "Unknown Status",
+                      text: "Unknown store status. Please contact support.",
+                      confirmButtonText: "OK",
+                    });
+                  }
+                } catch (error) {
+                  console.error("Error checking store status:", error);
+                  Swal.fire({
+                    icon: "error",
+                    title: "Error",
+                    text: "Failed to check store status. Please try again later.",
+                    confirmButtonText: "OK",
+                  });
+                }
+              });
+            });
+          </script>
           <nav class="navbar">
             <ul class="navbar-list">
               <li>

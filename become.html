@@ -10,7 +10,7 @@
             font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f8f8f8;
+            background-color: #f0f4f8;
             color: #333;
         }
 
@@ -20,14 +20,26 @@
             background-color: #fff;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         h1 {
             text-align: center;
             margin-bottom: 20px;
             font-size: 1.8rem;
-            color: #333;
+            color: #4caf50;
         }
 
         .form-group {
@@ -45,6 +57,12 @@
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #4caf50;
+            outline: none;
         }
 
         button {
@@ -56,45 +74,46 @@
             border-radius: 4px;
             cursor: pointer;
             font-size: 1rem;
+            transition: background-color 0.3s;
         }
 
         button:hover {
             background-color: #45a049;
         }
 
-        video {
+        video, img {
             width: 100%;
             border-radius: 8px;
             margin-bottom: 10px;
         }
 
-        img {
+        img.example-photo {
             max-width: 100%;
-            margin-top: 15px;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            margin-top: 10px;
+            padding: 10px;
         }
 
         .hidden {
             display: none;
         }
 
+        .success-message, .error-message {
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            text-align: center;
+        }
+
         .success-message {
             background-color: #dff0d8;
             color: #3c763d;
-            padding: 10px;
-            margin-top: 20px;
-            border-radius: 4px;
-            display: none;
-            text-align: center;
         }
 
         .error-message {
             background-color: #f2dede;
             color: #a94442;
-            padding: 10px;
-            margin-top: 20px;
-            border-radius: 4px;
-            display: none;
-            text-align: center;
         }
     </style>
 </head>
@@ -112,19 +131,20 @@
             </div>
             <div class="form-group">
                 <label for="nik">NIK (National Identity Number)</label>
-                <input type="text" id="nik" placeholder="Enter your NIK" required>
+                <input type="text" id="nik" placeholder="Enter your NIK 16 Nomor" required>
             </div>
             <div id="camera-section">
                 <video id="camera" autoplay></video>
                 <button type="button" id="capture-photo">Capture Photo</button>
+                <img src="./assets/images/example-photo.png" alt="Example: Holding ID Card" class="example-photo">
             </div>
             <img id="photo-preview" class="hidden" alt="Captured Photo">
             <button type="submit">Submit Application</button>
         </form>
-        <div class="success-message" id="success-message">
+        <div class="success-message hidden" id="success-message">
             Your application has been submitted successfully. Please wait for approval.
         </div>
-        <div class="error-message" id="error-message">
+        <div class="error-message hidden" id="error-message">
             There was an error submitting your application. Please try again.
         </div>
     </div>
@@ -135,7 +155,6 @@
         const photoPreview = document.getElementById("photo-preview");
         const cameraSection = document.getElementById("camera-section");
 
-        // Akses kamera pengguna
         navigator.mediaDevices
             .getUserMedia({ video: true })
             .then((stream) => {
@@ -145,68 +164,87 @@
                 console.error("Error accessing camera:", err);
             });
 
-        // Tangkap gambar saat tombol diklik
-        captureButton.addEventListener("click", () => {
+            captureButton.addEventListener("click", () => {
             const canvas = document.createElement("canvas");
             const context = canvas.getContext("2d");
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-            // Konversi gambar ke data URL
             const photoData = canvas.toDataURL("image/png");
+            console.log("Photo captured:", photoData.slice(0, 100)); // Debugging data foto
             photoPreview.src = photoData;
             photoPreview.classList.remove("hidden");
 
-            // Hentikan kamera dan sembunyikan video serta tombol capture
             const stream = video.srcObject;
             const tracks = stream.getTracks();
             tracks.forEach((track) => track.stop());
             cameraSection.classList.add("hidden");
         });
 
-        // Formulir pengiriman
         document.getElementById("seller-application-form").addEventListener("submit", async function (e) {
-            e.preventDefault();
+    e.preventDefault();
 
-            const storeName = document.getElementById("store-name").value;
-            const address = document.getElementById("address").value;
-            const nik = document.getElementById("nik").value;
-            const photo = photoPreview.src;
+    const storeName = document.getElementById("store-name").value;
+    const address = document.getElementById("address").value;
+    const nik = document.getElementById("nik").value;
+    const photo = photoPreview.src; // Ambil data URL dari foto
 
-            const token = localStorage.getItem("token");
+    // Validasi input
+    if (!storeName || !address || !nik) {
+        alert("Please fill in all fields.");
+        return;
+    }
 
-            try {
-                const response = await fetch("http://localhost:3000/become-seller", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({
-                        store_name: storeName,
-                        full_address: address,
-                        nik: nik,
-                        photo: photo,
-                    }),
-                });
+    if (!photo || photo.includes("hidden")) {
+        alert("Please capture a photo with your ID card.");
+        return;
+    }
 
-                if (response.ok) {
-                    document.getElementById("success-message").style.display = "block";
-                    document.getElementById("error-message").style.display = "none";
-                    this.reset();
-                } else {
-                    const errorData = await response.json();
-                    console.error("Error:", errorData.message);
-                    document.getElementById("error-message").style.display = "block";
-                    document.getElementById("success-message").style.display = "none";
-                }
-            } catch (error) {
-                console.error("Error submitting application:", error);
-                document.getElementById("error-message").style.display = "block";
-                document.getElementById("success-message").style.display = "none";
-            }
+    const token = localStorage.getItem("token");
+
+    // Konversi Base64 menjadi file Blob
+    const base64Data = photo.split(",")[1]; // Hanya data setelah koma
+    const byteCharacters = atob(base64Data);
+    const byteNumbers = new Array(byteCharacters.length).fill().map((_, i) => byteCharacters.charCodeAt(i));
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob = new Blob([byteArray], { type: "image/png" });
+
+    // Siapkan FormData
+    const formData = new FormData();
+    formData.append("store_name", storeName);
+    formData.append("full_address", address);
+    formData.append("nik", nik);
+    formData.append("photo", blob, "photo.png");
+
+    try {
+        const response = await fetch("http://localhost:3000/become-seller", {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`, // Token dikirim di header
+            },
+            body: formData, // Kirim sebagai multipart/form-data
         });
+
+        if (response.ok) {
+            document.getElementById("success-message").style.display = "block";
+            document.getElementById("error-message").style.display = "none";
+
+            // Alihkan ke halaman index.html setelah 2 detik
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 2000); // 2000ms = 2 detik
+        } else {
+            const errorData = await response.json();
+            console.error("Error:", errorData.message);
+            alert(errorData.message);
+        }
+    } catch (error) {
+        console.error("Error submitting application:", error);
+        document.getElementById("error-message").style.display = "block";
+        document.getElementById("success-message").style.display = "none";
+    }
+});
     </script>
 </body>
 </html>
