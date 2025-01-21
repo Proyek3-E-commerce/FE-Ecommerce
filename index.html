@@ -86,12 +86,18 @@
             <a
               class="header-action-btn"
               href="../cart/cart.html"
-              class="header-action-btn"
               aria-label="cart item"
             >
               <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>
-              <span class="btn-badge">0</span>
+              <span class="btn-badge" id="cart-count">0</span>
             </a>
+            <a
+    class="header-action-btn"
+    href="become.html"
+    aria-label="store registration"
+  >
+    <ion-icon name="storefront-outline" aria-hidden="true"></ion-icon>
+  </a>
           </div>
 
           <nav class="navbar">
@@ -327,101 +333,180 @@
       </section>
       
       <script>
-        async function fetchProducts(url, containerId) {
-          try {
-            const response = await fetch(url);
-            const data = await response.json();
-      
-            console.log('Fetched Data:', data);
-      
-            if (!data || !data.data || !Array.isArray(data.data)) {
-              console.error("Invalid data format:", data);
-              document.getElementById(containerId).innerHTML = "<p>No products found</p>";
-              return;
-            }
-      
-            const products = data.data;
-            const container = document.getElementById(containerId);
-            container.innerHTML = products
-  .map((product) => {
-    const imageUrl = product.image
-      ? `http://localhost:3000/${product.image.replace("./", "")}`
-      : "./images/default-product.png";
-    const name = product.name || "Unknown Product";
-    const price = product.price || 0;
-    const discount = product.discount || 0;
-    const rating = Math.round(product.rating) || 0; // Pastikan rating adalah angka
-    const reviews = product.reviews || 0;
+       // Fungsi untuk mengambil produk dari backend dan render ke halaman
+async function fetchProducts(url, containerId) {
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
 
-    return `
-      <li class="scrollbar-item">
-        <div class="shop-card">
-          <div class="card-banner img-holder" style="--width: 540; --height: 720">
-            <a href="ProductPage/index.html?productId=${product.id}" class="product-link">
-              <img src="${imageUrl}" width="540" height="720" loading="lazy" alt="${name}" class="img-cover" />
-            </a>
-            ${
-              discount > 0
-                ? `<span class="badge" aria-label="${discount}% off">-${discount}%</span>`
-                : ""
-            }
-            <div class="card-actions">
-              <button class="action-btn" aria-label="add to cart" onclick="addToCart(${JSON.stringify(
-                product
-              )})">
-                <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>
-              </button>
-            </div>
-          </div>
-          <div class="card-content">
-            <div class="price">
-              ${
-                discount > 0
-                  ? `<del class="del">Rp.${price.toLocaleString()}</del>`
-                  : ""
-              }
-              <span class="span">Rp.${(
-                price * (1 - discount / 100)
-              ).toLocaleString()}</span>
-            </div>
-            <h3><a href="ProductPage/index.html?productId=${product.id}" class="card-title">${name}</a></h3>
-            <div class="card-rating">
-              <div class="rating-wrapper" aria-label="${rating} star rating">
-                ${Array(rating)
-                  .fill('<ion-icon name="star" aria-hidden="true"></ion-icon>')
-                  .join("")}
+    console.log("Fetched Data:", data);
+
+    if (!data || !data.data || !Array.isArray(data.data)) {
+      console.error("Invalid data format:", data);
+      document.getElementById(containerId).innerHTML = "<p>No products found</p>";
+      return;
+    }
+
+    const products = data.data;
+    const container = document.getElementById(containerId);
+
+    container.innerHTML = products
+      .map((product) => {
+        const imageUrl = product.image
+          ? `http://localhost:3000/${product.image.replace("./", "")}`
+          : "./images/default-product.png";
+        const name = product.name || "Unknown Product";
+        const price = product.price || 0;
+        const discount = product.discount || 0;
+
+        return `
+          <li class="scrollbar-item">
+            <div class="shop-card">
+              <div class="card-banner img-holder" style="--width: 540; --height: 720">
+                <a href="ProductPage/index.html?productId=${product.id}" class="product-link">
+                  <img src="${imageUrl}" width="540" height="720" loading="lazy" alt="${name}" class="img-cover" />
+                </a>
+                ${
+                  discount > 0
+                    ? `<span class="badge" aria-label="${discount}% off">-${discount}%</span>`
+                    : ""
+                }
+                <div class="card-actions">
+                  <button class="action-btn" aria-label="add to cart" data-product='${JSON.stringify(
+                    product
+                  )}'>
+                    <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>
+                  </button>
+                </div>
               </div>
-              <p class="rating-text">${reviews} reviews</p>
+              <div class="card-content">
+                <div class="price">
+                  ${
+                    discount > 0
+                      ? `<del class="del">Rp.${price.toLocaleString()}</del>`
+                      : ""
+                  }
+                  <span class="span">Rp.${(
+                    price * (1 - discount / 100)
+                  ).toLocaleString()}</span>
+                </div>
+                <h3><a href="ProductPage/index.html?productId=${product.id}" class="card-title">${name}</a></h3>
+              </div>
             </div>
-          </div>
-        </div>
-      </li>
-    `;
-  })
-  .join("");
+          </li>
+        `;
+      })
+      .join("");
 
-          } catch (error) {
-            console.error("Error fetching products:", error);
-          }
-        }
+    // Tambahkan event listener untuk tombol "Add to Cart"
+    const buttons = container.querySelectorAll(".action-btn");
+    buttons.forEach((button) => {
+      button.addEventListener("click", (event) => {
+        const productData = JSON.parse(
+          event.currentTarget.getAttribute("data-product")
+        );
+        addToCart(productData);
+      });
+    });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
+}
 
-        const addToCart = (product) => {
-          // Ambil keranjang dari localStorage
-          let cart = JSON.parse(localStorage.getItem('cart')) || [];
-        
-          // Tambahkan produk ke keranjang
-          cart.push(product);
-        
-          // Simpan kembali ke localStorage
-          localStorage.setItem('cart', JSON.stringify(cart));
-        
-          // Beri notifikasi bahwa produk telah ditambahkan
-          alert(`${product.name} telah ditambahkan ke keranjang!`);
-        };
-        
-      
-        // Fetch products for both sections
-        fetchProducts('http://localhost:3000/products', 'bestsellers-list'); // Menggunakan endpoint 'products' untuk semua produk
+// Fungsi untuk menambahkan produk ke keranjang
+const addToCart = async (product) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("User is not authenticated");
+
+    // Decode token untuk mendapatkan user_id
+    const decoded = JSON.parse(
+      atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
+    );
+    const userId = decoded.user_id;
+
+    // Body request sesuai dengan format yang diberikan
+    const body = {
+      user_id: userId,
+      product_id: product.id,
+      image: product.image,
+      price: product.price,
+      quantity: 1, // Default jumlah
+      total_price: product.price, // Total harga awal
+    };
+
+    const response = await fetch("http://localhost:3000/cart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const responseText = await response.text();
+      throw new Error(`Failed to add product to cart: ${responseText}`);
+    }
+
+    const data = await response.json();
+    alert(data.message); // Menampilkan pesan sukses
+
+    // Redirect ke halaman keranjang
+    window.location.href = "../cart/cart.html";
+  } catch (error) {
+    console.error("Error adding product to cart:", error.message);
+    alert("Failed to add product to cart. Please try again.");
+  }
+};
+// Panggil fungsi untuk mengambil produk
+fetchProducts("http://localhost:3000/products", "bestsellers-list");
+
+ // Fungsi untuk mendapatkan jumlah produk di keranjang
+ const updateCartCount = async () => {
+  try {
+    // Ambil keranjang dari localStorage
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.warn("User not authenticated. Cart count will default to 0.");
+      document.getElementById("cart-count").textContent = "0";
+      return;
+    }
+
+    // Ambil user_id dari token
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const decodedToken = JSON.parse(
+      decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      )
+    );
+    const userId = decodedToken.user_id;
+
+    // Fetch data keranjang dari backend
+    const response = await fetch(`http://localhost:3000/cart?user_id=${userId}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch cart data: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const products = data.products || [];
+
+    // Hitung jumlah total produk
+    const totalCount = products.reduce((sum, product) => sum + product.quantity, 0);
+
+    // Perbarui jumlah produk di badge
+    document.getElementById("cart-count").textContent = totalCount;
+  } catch (error) {
+    console.error("Error updating cart count:", error.message);
+    document.getElementById("cart-count").textContent = "0"; // Tampilkan 0 jika terjadi kesalahan
+  }
+};
+
+// Panggil fungsi saat halaman dimuat
+document.addEventListener("DOMContentLoaded", updateCartCount);
       </script>     
   
         <!-- 
@@ -776,50 +861,5 @@
       nomodule
       src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
     ></script>
-
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const cartButtons = document.querySelectorAll(
-          ".action-btn[aria-label='add to cart']"
-        );
-
-        function addToCart(product) {
-          let cart = JSON.parse(localStorage.getItem("cart")) || [];
-          const existingProduct = cart.find((item) => item.id === product.id);
-
-          if (existingProduct) {
-            existingProduct.quantity += 1; // Jika produk sudah ada, tambahkan jumlahnya
-          } else {
-            cart.push({ ...product, quantity: 1 }); // Tambahkan produk baru ke keranjang
-          }
-
-          localStorage.setItem("cart", JSON.stringify(cart));
-        }
-
-        function showNotification() {
-          alert("Produk berhasil ditambahkan ke keranjang!");
-          // Setelah alert ditutup, arahkan ke halaman cart
-          window.location.href = "../cart/cart.html";
-        }
-
-        cartButtons.forEach((button) => {
-          button.addEventListener("click", function () {
-            const card = this.closest(".shop-card");
-            const product = {
-              id: card.querySelector(".card-title").textContent.trim(),
-              name: card.querySelector(".card-title").textContent.trim(),
-              price: card
-                .querySelector(".price .span")
-                .textContent.replace("Rp.", "")
-                .trim(),
-              image: card.querySelector("img").src,
-            };
-
-            addToCart(product);
-            showNotification(); // Tampilkan alert
-          });
-        });
-      });
-    </script>
   </body>
 </html>
