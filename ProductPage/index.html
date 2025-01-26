@@ -232,10 +232,6 @@
           </a>
 
           <div class="header-actions">
-            <a href="../login.html" class="header-action-btn" aria-label="user">
-              <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
-            </a>
-
             <!-- Ikon Keranjang -->
             <a
               class="header-action-btn"
@@ -265,142 +261,164 @@
         <p>&copy; 2024 Glowing. All rights reserved.</p>
       </div>
     </footer>
-
+    
     <script>
       const params = new URLSearchParams(window.location.search);
       const productId = params.get("productId");
-
+    
       const renderProductDetails = (data) => {
         const product = data.product;
         const store = data.store;
-
+    
         const imageUrl = product.image
           ? `http://localhost:3000/${product.image.replace("./", "")}`
           : "./images/default-product.png";
-
+    
         const productContainer = document.getElementById("product-container");
         productContainer.innerHTML = `
-    <div class="product-detail-card">
-      <!-- Product Images -->
-      <div class="product-image img">
-        <div class="product-image img">
-          <img src="${imageUrl}" alt="${product.name}" loading="lazy" />
-        </div>
-        
-      </div>
-
-      <!-- Product Info -->
-      <div class="product-info">
-        <h1 class="product-title">${product.category}: ${product.name}</h1>
-        <p class="product-price">
-          ${
-            product.discount > 0
-              ? `<del>Rp.${product.price.toLocaleString()}</del>`
-              : ""
-          }
-          <span>Rp.${(
-            product.price *
-            (1 - product.discount / 100)
-          ).toLocaleString()}</span>
-        </p>
-        <p class="product-description">${product.description}</p>
-
-        <!-- Store Info -->
-        <div class="store-info">
-          <a href="halamantoko.html?storeId=${
-            store.seller_id
-          }" class="store-link" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit;">
-            <ion-icon name="storefront-outline" aria-hidden="true" style="font-size: 1.5rem; color: #e63946;"></ion-icon>
-            <span>${store.store_name}</span>
-          </a>
-          <p>${store.full_address}</p>
-        </div>
-
-        <!-- Add to Cart Button -->
-        <button class="btn-add-to-cart" onclick="addToCart('${product.id}')">
-          Add to Cart
-        </button>
-      </div>
-    </div>
-  `;
+          <div class="product-detail-card">
+            <!-- Product Images -->
+            <div class="product-image img">
+              <div class="product-image img">
+                <img src="${imageUrl}" alt="${product.name}" loading="lazy" />
+              </div>
+            </div>
+    
+            <!-- Product Info -->
+            <div class="product-info">
+              <h1 class="product-title">${product.category}: ${product.name}</h1>
+              <p class="product-price">
+                ${
+                  product.discount > 0
+                    ? `<del>Rp.${product.price.toLocaleString()}</del>`
+                    : ""
+                }
+                <span>Rp.${(
+                  product.price *
+                  (1 - product.discount / 100)
+                ).toLocaleString()}</span>
+              </p>
+              <p class="product-description">${product.description}</p>
+    
+              <!-- Store Info -->
+              <div class="store-info">
+                <a href="halamantoko.html?storeId=${
+                  store.seller_id
+                }" class="store-link" style="display: flex; align-items: center; gap: 8px; text-decoration: none; color: inherit;">
+                  <ion-icon name="storefront-outline" aria-hidden="true" style="font-size: 1.5rem; color: #e63946;"></ion-icon>
+                  <span>${store.store_name}</span>
+                </a>
+                <p>${store.full_address}</p>
+              </div>
+    
+              <!-- Add to Cart Button -->
+              <button class="btn-add-to-cart" onclick="addToCart('${product.id}')">
+                Add to Cart
+              </button>
+            </div>
+          </div>
+        `;
       };
-
-      const updateMainImage = (img) => {
-        document.querySelector(".main-image img").src = img;
-      };
-
+    
       const addToCart = async (productId) => {
         try {
-          // Ambil token dari localStorage untuk user_id (jika menggunakan autentikasi)
           const token = localStorage.getItem("token");
           if (!token) throw new Error("User is not authenticated");
-
-          // Ambil keranjang dari localStorage
-          let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-          // Periksa apakah produk sudah ada di keranjang
-          const existingProduct = cart.find(
-            (item) => item.productId === productId
-          );
-
-          if (existingProduct) {
-            // Jika produk sudah ada, tingkatkan jumlah
-            existingProduct.quantity += 1;
-          } else {
-            // Jika produk belum ada, ambil detail produk dari backend
-            const response = await fetch(
-              `http://localhost:3000/products/${productId}`
+    
+          const userId = JSON.parse(atob(token.split(".")[1])).user_id;
+    
+          // Ambil detail produk dari backend
+          const response = await fetch(`http://localhost:3000/products/${productId}`);
+          if (!response.ok) {
+            throw new Error(
+              `Failed to fetch product details: ${response.statusText}`
             );
-            if (!response.ok) {
-              throw new Error(
-                `Failed to fetch product details: ${response.statusText}`
-              );
-            }
-
-            const productData = await response.json();
-            const product = productData.product;
-
-            // Tambahkan produk ke keranjang
-            cart.push({
-              productId: product.id,
-              name: product.name,
-              price: product.price,
-              image: product.image,
-              quantity: 1, // Jumlah awal
-            });
-
-            // Opsional: Simpan ke backend (jika sistem menyimpan keranjang di database)
-            await fetch("http://localhost:3000/cart", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${token}`, // Jika menggunakan autentikasi
-              },
-              body: JSON.stringify({
-                user_id: JSON.parse(atob(token.split(".")[1])).user_id,
-                product_id: product.id,
-                image: product.image,
-                price: product.price,
-                quantity: 1,
-                total_price: product.price,
-              }),
-            });
           }
-
-          // Simpan kembali ke localStorage
-          localStorage.setItem("cart", JSON.stringify(cart));
-
-          // Beri notifikasi bahwa produk telah ditambahkan
+    
+          const productData = await response.json();
+          const product = productData.product;
+    
+          // Kirim produk ke backend untuk disimpan di keranjang
+          const cartResponse = await fetch("http://localhost:3000/cart", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              user_id: userId,
+              product_id: product.id,
+              image: product.image,
+              price: product.price,
+              quantity: 1,
+              total_price: product.price,
+            }),
+          });
+    
+          if (!cartResponse.ok) {
+            const errorData = await cartResponse.json();
+            throw new Error(
+              `Failed to add product to cart: ${errorData.message || "Unknown error"}`
+            );
+          }
+    
           alert("Product added to cart!");
-
-          // Alihkan ke halaman keranjang
           window.location.href = "../cart/cart.html";
         } catch (error) {
           console.error("Error adding product to cart:", error.message);
           alert("Failed to add product to cart. Please try again.");
         }
       };
-
+    
+      const updateCartCount = async () => {
+        try {
+          const token = localStorage.getItem("token");
+          if (!token) {
+            console.warn("User not authenticated. Cart count will default to 0.");
+            document.getElementById("cart-count").textContent = "0";
+            return;
+          }
+    
+          const base64Url = token.split(".")[1];
+          const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+          const decodedToken = JSON.parse(
+            decodeURIComponent(
+              atob(base64)
+                .split("")
+                .map(
+                  (c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
+                )
+                .join("")
+            )
+          );
+          const userId = decodedToken.user_id;
+    
+          // Fetch data keranjang dari backend
+          const response = await fetch(
+            `http://localhost:3000/cart?user_id=${userId}`
+          );
+          if (!response.ok) {
+            throw new Error(`Failed to fetch cart data: ${response.statusText}`);
+          }
+    
+          const data = await response.json();
+          const products = data.products || [];
+    
+          // Hitung jumlah total produk
+          const totalCount = products.reduce(
+            (sum, product) => sum + product.quantity,
+            0
+          );
+    
+          // Perbarui jumlah produk di badge
+          document.getElementById("cart-count").textContent = totalCount;
+        } catch (error) {
+          console.error("Error updating cart count:", error.message);
+          document.getElementById("cart-count").textContent = "0"; // Tampilkan 0 jika terjadi kesalahan
+        }
+      };
+    
+      // Fetch detail produk saat halaman dimuat
       if (productId) {
         fetch(`http://localhost:3000/products/${productId}`)
           .then((response) => {
@@ -419,63 +437,9 @@
         document.getElementById("product-container").innerHTML =
           "<p>No product ID found in URL</p>";
       }
-
-      const updateCartCount = async () => {
-        try {
-          // Ambil keranjang dari localStorage
-          const token = localStorage.getItem("token");
-          if (!token) {
-            console.warn(
-              "User not authenticated. Cart count will default to 0."
-            );
-            document.getElementById("cart-count").textContent = "0";
-            return;
-          }
-
-          // Ambil user_id dari token
-          const base64Url = token.split(".")[1];
-          const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-          const decodedToken = JSON.parse(
-            decodeURIComponent(
-              atob(base64)
-                .split("")
-                .map(
-                  (c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
-                )
-                .join("")
-            )
-          );
-          const userId = decodedToken.user_id;
-
-          // Fetch data keranjang dari backend
-          const response = await fetch(
-            `http://localhost:3000/cart?user_id=${userId}`
-          );
-          if (!response.ok) {
-            throw new Error(
-              `Failed to fetch cart data: ${response.statusText}`
-            );
-          }
-
-          const data = await response.json();
-          const products = data.products || [];
-
-          // Hitung jumlah total produk
-          const totalCount = products.reduce(
-            (sum, product) => sum + product.quantity,
-            0
-          );
-
-          // Perbarui jumlah produk di badge
-          document.getElementById("cart-count").textContent = totalCount;
-        } catch (error) {
-          console.error("Error updating cart count:", error.message);
-          document.getElementById("cart-count").textContent = "0"; // Tampilkan 0 jika terjadi kesalahan
-        }
-      };
-
-      // Panggil fungsi saat halaman dimuat
+    
+      // Panggil fungsi untuk memperbarui jumlah keranjang
       document.addEventListener("DOMContentLoaded", updateCartCount);
-    </script>
+    </script>    
   </body>
 </html>

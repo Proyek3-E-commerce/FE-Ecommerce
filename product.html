@@ -82,13 +82,13 @@
             
               <!-- Ikon Keranjang -->
               <a
-                class="header-action-btn"
-                href="../cart/cart.html"
-                aria-label="cart item"
-              >
-                <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>
-                <span class="btn-badge">0</span>
-              </a>
+              class="header-action-btn"
+              href="../cart/cart.html"
+              aria-label="cart item"
+            >
+              <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>
+              <span class="btn-badge" id="cart-count">0</span>
+            </a>
             </div>          
             </div>
           </div>
@@ -104,7 +104,7 @@
             </a>
           </div>
       
-          <ul id="bestsellers-list" class="has-scrollbar">
+          <ul id="bestsellers-list" class="product-list">
             <!-- Semua produk akan dimuat di sini secara dinamis -->
           </ul>
         </div>
@@ -121,88 +121,180 @@
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
     <script>
-      async function fetchProducts(url, containerId) {
-        try {
-          const response = await fetch(url);
-          const data = await response.json();
-    
-          console.log('Fetched Data:', data);
-    
-          if (!data || !data.data || !Array.isArray(data.data)) {
-            console.error("Invalid data format:", data);
-            document.getElementById(containerId).innerHTML = "<p>No products found</p>";
-            return;
-          }
-    
-          const products = data.data;
-          const container = document.getElementById(containerId);
-          container.innerHTML = products
-            .map(product => {
-              return `
-                <li class="scrollbar-item">
-                  <div class="shop-card">
-                    <div class="card-banner img-holder" style="--width: 540; --height: 720">
-                      <a href="ProductPage/index.html?productId=${product.id}" class="product-link">
-                        <img src="ProductPage/${product.image}" width="540" height="720" loading="lazy" alt="${product.name}" class="img-cover" />
-                      </a>
-                      ${product.discount > 0 ? `<span class="badge" aria-label="${product.discount}% off">-${product.discount}%</span>` : ''}
-                      <div class="card-actions">
-                        <button class="action-btn" aria-label="add to cart" onclick="addToCart(${JSON.stringify(product)})">
-  <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>
-</button>
+      // Fungsi untuk mengambil produk dari backend dan render ke halaman
+async function fetchProducts(url, containerId) {
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
 
-                      </div>
-                    </div>
-                    <div class="card-content">
-                      <div class="price">
-                        ${product.discount > 0 ? `<del class="del">Rp.${(product.price).toLocaleString()}</del>` : ''}
-                        <span class="span">Rp.${((product.price * (1 - product.discount / 100))).toLocaleString()}</span>
-                      </div>
-                      <h3><a href="ProductPage/index.html?productId=${product.id}" class="card-title">${product.name}</a></h3>
-                      <div class="card-rating">
-                        <div class="rating-wrapper" aria-label="${product.rating} star rating">
-                          ${Array(Math.round(product.rating)).fill('<ion-icon name="star" aria-hidden="true"></ion-icon>').join('')}
-                        </div>
-                        <p class="rating-text">${product.reviews} reviews</p>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              `;
-            })
-            .join('');
-        } catch (error) {
-          console.error("Error fetching products:", error);
-        }
-      }
+    console.log("Fetched Data:", data);
 
-      // Tunggu hingga DOM selesai dimuat
-document.addEventListener('DOMContentLoaded', () => {
-  // Fungsi untuk menambahkan atau menghapus kelas 'active' pada header
-  const headerActive = () => {
-    const header = document.querySelector('.header'); // Ambil elemen header
-    if (!header) {
-      console.error('Header element not found!');
+    if (!data || !data.data || !Array.isArray(data.data)) {
+      console.error("Invalid data format:", data);
+      document.getElementById(containerId).innerHTML = "<p>No products found</p>";
       return;
     }
 
-    if (window.scrollY > 50) {
-      header.classList.add('active'); // Tambahkan kelas 'active' jika scroll lebih dari 50px
-    } else {
-      header.classList.remove('active'); // Hapus kelas 'active' jika kurang dari 50px
+    const products = data.data;
+    const container = document.getElementById(containerId);
+
+    container.innerHTML = products
+      .map((product) => {
+        const imageUrl = product.image
+          ? `http://localhost:3000/${product.image.replace("./", "")}`
+          : "./images/default-product.png";
+        const name = product.name || "Unknown Product";
+        const price = product.price || 0;
+        const discount = product.discount || 0;
+
+        return `
+          <li class="scrollbar-item">
+            <div class="shop-card">
+              <div class="card-banner img-holder" style="--width: 540; --height: 720">
+                <a href="ProductPage/index.html?productId=${product.id}" class="product-link">
+                  <img src="${imageUrl}" width="540" height="720" loading="lazy" alt="${name}" class="img-cover" />
+                </a>
+                ${
+                  discount > 0
+                    ? `<span class="badge" aria-label="${discount}% off">-${discount}%</span>`
+                    : ""
+                }
+                <div class="card-actions">
+                  <button class="action-btn" aria-label="add to cart" data-product='${JSON.stringify(
+                    product
+                  )}'>
+                    <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>
+                  </button>
+                </div>
+              </div>
+              <div class="card-content">
+                <div class="price">
+                  ${
+                    discount > 0
+                      ? `<del class="del">Rp.${price.toLocaleString()}</del>`
+                      : ""
+                  }
+                  <span class="span">Rp.${(
+                    price * (1 - discount / 100)
+                  ).toLocaleString()}</span>
+                </div>
+                <h3><a href="ProductPage/index.html?productId=${product.id}" class="card-title">${name}</a></h3>
+              </div>
+            </div>
+          </li>
+        `;
+      })
+      .join("");
+
+    // Tambahkan event listener untuk tombol "Add to Cart"
+    const buttons = container.querySelectorAll(".action-btn");
+    buttons.forEach((button) => {
+      button.addEventListener("click", (event) => {
+        const productData = JSON.parse(
+          event.currentTarget.getAttribute("data-product")
+        );
+        addToCart(productData);
+      });
+    });
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
+}
+
+// Fungsi untuk menambahkan produk ke keranjang
+const addToCart = async (product) => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("User is not authenticated");
+
+    // Decode token untuk mendapatkan user_id
+    const decoded = JSON.parse(
+      atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
+    );
+    const userId = decoded.user_id;
+
+    // Body request sesuai dengan format yang diberikan
+    const body = {
+      user_id: userId,
+      product_id: product.id,
+      image: product.image,
+      price: product.price,
+      quantity: 1, // Default jumlah
+      total_price: product.price, // Total harga awal
+    };
+
+    const response = await fetch("http://localhost:3000/cart", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      const responseText = await response.text();
+      throw new Error(`Failed to add product to cart: ${responseText}`);
     }
-  };
 
-  // Tambahkan event listener scroll
-  window.addEventListener('scroll', headerActive);
+    const data = await response.json();
+    alert(data.message); // Menampilkan pesan sukses
 
-  // Panggil fungsi sekali untuk memastikan kelas 'active' benar saat halaman dimuat
-  headerActive();
-});
+    // Redirect ke halaman keranjang
+    window.location.href = "../cart/cart.html";
+  } catch (error) {
+    console.error("Error adding product to cart:", error.message);
+    alert("Failed to add product to cart. Please try again.");
+  }
+};
+// Panggil fungsi untuk mengambil produk
+fetchProducts("http://localhost:3000/products", "bestsellers-list");
 
-      // Fetch products for both sections
-     
-      fetchProducts('http://localhost:3000/products', 'bestsellers-list'); // Menggunakan endpoint 'products' untuk semua produk
+ // Fungsi untuk mendapatkan jumlah produk di keranjang
+ const updateCartCount = async () => {
+  try {
+    // Ambil keranjang dari localStorage
+    const token = localStorage.getItem("token");
+    if (!token) {
+      console.warn("User not authenticated. Cart count will default to 0.");
+      document.getElementById("cart-count").textContent = "0";
+      return;
+    }
+
+    // Ambil user_id dari token
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const decodedToken = JSON.parse(
+      decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      )
+    );
+    const userId = decodedToken.user_id;
+
+    // Fetch data keranjang dari backend
+    const response = await fetch(`http://localhost:3000/cart?user_id=${userId}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch cart data: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    const products = data.products || [];
+
+    // Hitung jumlah total produk
+    const totalCount = products.reduce((sum, product) => sum + product.quantity, 0);
+
+    // Perbarui jumlah produk di badge
+    document.getElementById("cart-count").textContent = totalCount;
+  } catch (error) {
+    console.error("Error updating cart count:", error.message);
+    document.getElementById("cart-count").textContent = "0"; // Tampilkan 0 jika terjadi kesalahan
+  }
+};
+
+// Panggil fungsi saat halaman dimuat
+document.addEventListener("DOMContentLoaded", updateCartCount);
     </script> 
   </body>
 </html>

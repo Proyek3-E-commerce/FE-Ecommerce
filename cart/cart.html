@@ -171,6 +171,7 @@
         font-weight: bold;
       }
     </style>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   </head>
   <body>
     <header class="header">
@@ -189,6 +190,22 @@
     </div>
 
     <script>
+      const checkAuthentication = () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          Swal.fire({
+            title: "You are not logged in!",
+            text: "Please log in to access your cart.",
+            icon: "warning",
+            confirmButtonText: "Go to Login",
+            allowOutsideClick: false,
+          }).then(() => {
+            window.location.href = "../login.html";
+          });
+          return false;
+        }
+        return true;
+      };
       // Function to decode JWT token
       function parseJwt(token) {
         try {
@@ -333,6 +350,7 @@
 
       // Function to fetch cart items
       const fetchCartItems = async () => {
+        if (!checkAuthentication()) return;
         try {
           const token = localStorage.getItem("token");
           if (!token) throw new Error("User is not authenticated");
