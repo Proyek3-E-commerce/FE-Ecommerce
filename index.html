@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Glowing - Reveal The Beauty of Skin</title>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- 
     - favicon
@@ -37,7 +36,6 @@
   </head>
 
   <body id="top">
-    
     <!-- 
     - #HEADER
   -->
@@ -69,6 +67,8 @@
               <ion-icon name="search-outline" aria-hidden="true"></ion-icon>
             </button>
           </div>
+
+         
           <a href="#" class="logo">
             <img
               src="./assets/images/logo.png"
@@ -79,75 +79,69 @@
           </a>
 
           <div class="auth-container">
-            <a href="login.html" class="header-action-btn" id="auth-icon" aria-label="user">
+            <a href="#" class="header-action-btn" id="auth-icon" aria-label="user">
               <ion-icon name="person-outline" aria-hidden="true"></ion-icon>
             </a>
-            <div class="auth-menu" id="auth-menu">
+            <div class="auth-menu" id="auth-menu" style="display: none; position: absolute; right: 0; top: 40px; background: white; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); border-radius: 8px; padding: 10px;">
               <!-- Menu akan diisi oleh JavaScript -->
             </div>
-          </div>          
-            <script> 
-              document.addEventListener("DOMContentLoaded", () => {
-                const authIcon = document.getElementById("auth-icon");
-                const authMenu = document.getElementById("auth-menu");
-              
-                // Fungsi untuk memeriksa status login
-                const isLoggedIn = () => {
-                  const token = localStorage.getItem("token");
-                  return token !== null;
-                };
-              
-                // Fungsi logout
-                const logout = () => {
-                  console.log("Logging out...");
-              
-                  // Hapus token
-                  localStorage.removeItem("token");
-              
-                  // Verifikasi penghapusan token
-                  if (!localStorage.getItem("token")) {
-                    console.log("Token removed successfully.");
-                  } else {
-                    console.error("Failed to remove token.");
-                  }
-              
-                  // Tampilkan pesan logout
-                  alert("Logout successful!");
-              
-                  // Redirect ke halaman login
-                  window.location.href = "login.html";
-                };
-              
-                // Update menu dropdown berdasarkan status login
-                const updateAuthMenu = () => {
-                  if (isLoggedIn()) {
-                    // Jika sudah login
-                    authMenu.innerHTML = `
-                      <a href="#" id="logout-btn">Logout</a>
-                    `;
-              
-                    // Tambahkan event listener untuk logout
-                    const logoutBtn = document.getElementById("logout-btn");
-                    if (logoutBtn) {
-                      logoutBtn.addEventListener("click", (event) => {
-                        event.preventDefault(); // Hindari navigasi default
-                        logout(); // Jalankan fungsi logout
-                      });
-                    } else {
-                      console.error("Logout button not found.");
-                    }
-                  } else {
-                    // Jika belum login
-                    authMenu.innerHTML = `
-                      <a href="login.html">Login</a>
-                    `;
-                  }
-                };
-              
-                // Inisialisasi menu
-                updateAuthMenu();
-              });              
-            </script>
+          </div>
+          
+          <script>
+            document.addEventListener("DOMContentLoaded", () => {
+              const authIcon = document.getElementById("auth-icon");
+              const authMenu = document.getElementById("auth-menu");
+          
+              // Fungsi untuk mengecek status login
+              const isLoggedIn = () => {
+                const token = localStorage.getItem("token");
+                return token !== null;
+              };
+          
+              // Fungsi untuk logout
+              const logout = () => {
+                localStorage.removeItem("token");
+                alert("Logout successful!");
+                window.location.href = "login.html";
+              };
+          
+              // Fungsi untuk memperbarui menu dropdown
+              const updateAuthMenu = () => {
+                if (isLoggedIn()) {
+                  authMenu.innerHTML = `
+                    <a href="profile.html" style="display: block; margin-bottom: 10px;">Profile</a>
+                    <a href="#" id="logout-btn" style="display: block;">Logout</a>
+                  `;
+          
+                  // Tambahkan event listener untuk logout
+                  const logoutBtn = document.getElementById("logout-btn");
+                  logoutBtn.addEventListener("click", (event) => {
+                    event.preventDefault();
+                    logout();
+                  });
+                } else {
+                  authMenu.innerHTML = `
+                    <a href="login.html" style="display: block;">Login</a>
+                  `;
+                }
+              };
+          
+              // Tampilkan atau sembunyikan dropdown menu
+              authIcon.addEventListener("click", () => {
+                authMenu.style.display = authMenu.style.display === "none" ? "block" : "none";
+              });
+          
+              // Tutup dropdown jika pengguna mengklik di luar menu
+              document.addEventListener("click", (event) => {
+                if (!authMenu.contains(event.target) && !authIcon.contains(event.target)) {
+                  authMenu.style.display = "none";
+                }
+              });
+          
+              // Perbarui menu saat halaman dimuat
+              updateAuthMenu();
+            });
+          </script>          
 
             <!-- Ikon Keranjang -->
             <a
@@ -158,94 +152,59 @@
               <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>
               <span class="btn-badge" id="cart-count">0</span>
             </a>
+            <!-- Ikon Seller -->
             <a
-            class="header-action-btn"
-            href="#"
-            aria-label="store registration"
-            id="store-registration-btn"
-          >
-            <ion-icon name="storefront-outline" aria-hidden="true"></ion-icon>
-          </a>
+  class="header-action-btn"
+  id="seller-button"
+  href="become.html"
+  aria-label="store registration"
+>
+  <ion-icon name="storefront-outline" aria-hidden="true"></ion-icon>
+</a>
+
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    const sellerButton = document.getElementById("seller-button");
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      // Jika tidak login, arahkan ke halaman form menjadi seller
+      sellerButton.setAttribute("href", "become.html");
+      return;
+    }
+
+    try {
+      // Decode token untuk mendapatkan user_id
+      const decoded = JSON.parse(atob(token.split(".")[1]));
+      const userId = decoded.user_id;
+
+      // Periksa status pengguna dari backend
+      const response = await fetch(`http://localhost:3000/users/${userId}`);
+      if (!response.ok) {
+        throw new Error("Failed to fetch user data");
+      }
+
+      const data = await response.json();
+      const roles = data.data.roles; // Ambil roles dari respons backend
+
+      if (roles.includes("seller")) {
+        // Jika role pengguna mencakup 'seller', arahkan ke dashboard seller
+        sellerButton.setAttribute("href", "penjual-dashboard/index.html");
+      } else {
+        // Jika bukan seller, arahkan ke halaman form menjadi seller
+        sellerButton.setAttribute("href", "become.html");
+      }
+    } catch (error) {
+      console.error("Error checking user roles:", error.message);
+      // Jika terjadi kesalahan, default ke halaman form menjadi seller
+      sellerButton.setAttribute("href", "become.html");
+    }
+  });
+</script>
+
+          
           </div>
-          <script>
-            document.addEventListener("DOMContentLoaded", async () => {
-              const storeRegistrationBtn = document.getElementById("store-registration-btn");
-        
-              storeRegistrationBtn.addEventListener("click", async (e) => {
-                e.preventDefault();
-        
-                try {
-                  const token = localStorage.getItem("token");
-                  if (!token) {
-                    Swal.fire({
-                      icon: "warning",
-                      title: "Login Required",
-                      text: "You need to log in first!",
-                      confirmButtonText: "Go to Login",
-                    }).then(() => {
-                      window.location.href = "login.html";
-                    });
-                    return;
-                  }
-        
-                  const base64Url = token.split(".")[1];
-                  const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-                  const decodedToken = JSON.parse(atob(base64));
-                  const userId = decodedToken.user_id;
-        
-                  const response = await fetch(`http://localhost:3000/users/${userId}`, {
-                    method: "GET",
-                    headers: {
-                      Authorization: `Bearer ${token}`,
-                      "Content-Type": "application/json",
-                    },
-                  });
-        
-                  if (!response.ok) {
-                    throw new Error("Failed to fetch user data.");
-                  }
-        
-                  const { data: userData } = await response.json();
-                  const storeStatus = userData.store_status;
-        
-                  if (!storeStatus || storeStatus === "not_available") {
-                    window.location.href = "become.html";
-                  } else if (storeStatus === "pending") {
-                    Swal.fire({
-                      icon: "info",
-                      title: "Application Pending",
-                      text: "Your store registration is still under review.",
-                      confirmButtonText: "OK",
-                    });
-                  } else if (storeStatus === "rejected") {
-                    Swal.fire({
-                      icon: "error",
-                      title: "Application Rejected",
-                      text: "Your store registration has been rejected by the admin.",
-                      confirmButtonText: "OK",
-                    });
-                  } else if (storeStatus === "approved") {
-                    window.location.href = "penjual-dashboard/index.html";
-                  } else {
-                    Swal.fire({
-                      icon: "warning",
-                      title: "Unknown Status",
-                      text: "Unknown store status. Please contact support.",
-                      confirmButtonText: "OK",
-                    });
-                  }
-                } catch (error) {
-                  console.error("Error checking store status:", error);
-                  Swal.fire({
-                    icon: "error",
-                    title: "Error",
-                    text: "Failed to check store status. Please try again later.",
-                    confirmButtonText: "OK",
-                  });
-                }
-              });
-            });
-          </script>
+
           <nav class="navbar">
             <ul class="navbar-list">
               <li>
@@ -480,84 +439,81 @@
       
       <script>
        // Fungsi untuk mengambil produk dari backend dan render ke halaman
-async function fetchProducts(url, containerId) {
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
+       async function fetchProducts(url, containerId) {
+        try {
+          const response = await fetch(url);
+          const data = await response.json();
 
-    console.log("Fetched Data:", data);
+          if (!data || !data.data || !Array.isArray(data.data)) {
+            console.error("Invalid data format:", data);
+            document.getElementById(containerId).innerHTML = "<p>No products found</p>";
+            return;
+          }
 
-    if (!data || !data.data || !Array.isArray(data.data)) {
-      console.error("Invalid data format:", data);
-      document.getElementById(containerId).innerHTML = "<p>No products found</p>";
-      return;
-    }
+          const products = data.data;
+          const container = document.getElementById(containerId);
 
-    const products = data.data;
-    const container = document.getElementById(containerId);
+          container.innerHTML = products
+            .map((product) => {
+              const imageUrl = product.image
+                ? `http://localhost:3000/${product.image.replace("./", "")}`
+                : "./images/default-product.png";
+              const name = product.name || "Unknown Product";
+              const price = product.price || 0;
+              const discount = product.discount || 0;
 
-    container.innerHTML = products
-      .map((product) => {
-        const imageUrl = product.image
-          ? `http://localhost:3000/${product.image.replace("./", "")}`
-          : "./images/default-product.png";
-        const name = product.name || "Unknown Product";
-        const price = product.price || 0;
-        const discount = product.discount || 0;
+              return `
+                <li class="scrollbar-item">
+                  <div class="shop-card">
+                    <div class="card-banner img-holder" style="--width: 540; --height: 720">
+                      <a href="ProductPage/index.html?productId=${product._id}" class="product-link">
+                        <img src="${imageUrl}" width="540" height="720" loading="lazy" alt="${name}" class="img-cover" />
+                      </a>
+                      ${
+                        discount > 0
+                          ? `<span class="badge" aria-label="${discount}% off">-${discount}%</span>`
+                          : ""
+                      }
+                      <div class="card-actions">
+                        <button class="action-btn" aria-label="add to cart" data-product='${JSON.stringify(
+                          product
+                        )}'>
+                          <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>
+                        </button>
+                      </div>
+                    </div>
+                    <div class="card-content">
+                      <div class="price">
+                        ${
+                          discount > 0
+                            ? `<del class="del">Rp.${price.toLocaleString()}</del>`
+                            : ""
+                        }
+                        <span class="span">Rp.${(
+                          price * (1 - discount / 100)
+                        ).toLocaleString()}</span>
+                      </div>
+                      <h3><a href="ProductPage/index.html?productId=${product.id}" class="card-title">${name}</a></h3>
+                    </div>
+                  </div>
+                </li>
+              `;
+            })
+            .join("");
 
-        return `
-          <li class="scrollbar-item">
-            <div class="shop-card">
-              <div class="card-banner img-holder" style="--width: 540; --height: 720">
-                <a href="ProductPage/index.html?productId=${product.id}" class="product-link">
-                  <img src="${imageUrl}" width="540" height="720" loading="lazy" alt="${name}" class="img-cover" />
-                </a>
-                ${
-                  discount > 0
-                    ? `<span class="badge" aria-label="${discount}% off">-${discount}%</span>`
-                    : ""
-                }
-                <div class="card-actions">
-                  <button class="action-btn" aria-label="add to cart" data-product='${JSON.stringify(
-                    product
-                  )}'>
-                    <ion-icon name="bag-handle-outline" aria-hidden="true"></ion-icon>
-                  </button>
-                </div>
-              </div>
-              <div class="card-content">
-                <div class="price">
-                  ${
-                    discount > 0
-                      ? `<del class="del">Rp.${price.toLocaleString()}</del>`
-                      : ""
-                  }
-                  <span class="span">Rp.${(
-                    price * (1 - discount / 100)
-                  ).toLocaleString()}</span>
-                </div>
-                <h3><a href="ProductPage/index.html?productId=${product.id}" class="card-title">${name}</a></h3>
-              </div>
-            </div>
-          </li>
-        `;
-      })
-      .join("");
-
-    // Tambahkan event listener untuk tombol "Add to Cart"
-    const buttons = container.querySelectorAll(".action-btn");
-    buttons.forEach((button) => {
-      button.addEventListener("click", (event) => {
-        const productData = JSON.parse(
-          event.currentTarget.getAttribute("data-product")
-        );
-        addToCart(productData);
-      });
-    });
-  } catch (error) {
-    console.error("Error fetching products:", error);
-  }
-}
+          const buttons = container.querySelectorAll(".action-btn");
+          buttons.forEach((button) => {
+            button.addEventListener("click", (event) => {
+              const productData = JSON.parse(
+                event.currentTarget.getAttribute("data-product")
+              );
+              addToCart(productData);
+            });
+          });
+        } catch (error) {
+          console.error("Error fetching products:", error);
+        }
+      }
 
 // Fungsi untuk menambahkan produk ke keranjang
 const addToCart = async (product) => {
@@ -565,20 +521,18 @@ const addToCart = async (product) => {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("User is not authenticated");
 
-    // Decode token untuk mendapatkan user_id
     const decoded = JSON.parse(
       atob(token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))
     );
     const userId = decoded.user_id;
 
-    // Body request sesuai dengan format yang diberikan
     const body = {
       user_id: userId,
       product_id: product.id,
       image: product.image,
       price: product.price,
-      quantity: 1, // Default jumlah
-      total_price: product.price, // Total harga awal
+      quantity: 1,
+      total_price: product.price,
     };
 
     const response = await fetch("http://localhost:3000/cart", {
@@ -594,17 +548,14 @@ const addToCart = async (product) => {
       throw new Error(`Failed to add product to cart: ${responseText}`);
     }
 
-    const data = await response.json();
-    alert(data.message); // Menampilkan pesan sukses
-
-    // Redirect ke halaman keranjang
+    alert("Product added to cart!");
     window.location.href = "../cart/cart.html";
   } catch (error) {
     console.error("Error adding product to cart:", error.message);
     alert("Failed to add product to cart. Please try again.");
   }
 };
-// Panggil fungsi untuk mengambil produk
+
 fetchProducts("http://localhost:3000/products", "bestsellers-list");
 
  // Fungsi untuk mendapatkan jumlah produk di keranjang

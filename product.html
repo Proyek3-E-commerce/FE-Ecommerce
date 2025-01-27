@@ -151,7 +151,7 @@ async function fetchProducts(url, containerId) {
           <li class="scrollbar-item">
             <div class="shop-card">
               <div class="card-banner img-holder" style="--width: 540; --height: 720">
-                <a href="ProductPage/index.html?productId=${product.id}" class="product-link">
+                <a href="ProductPage/index.html?productId=${product._id}" class="product-link">
                   <img src="${imageUrl}" width="540" height="720" loading="lazy" alt="${name}" class="img-cover" />
                 </a>
                 ${
@@ -216,7 +216,7 @@ const addToCart = async (product) => {
     // Body request sesuai dengan format yang diberikan
     const body = {
       user_id: userId,
-      product_id: product.id,
+      product_id: product._id,
       image: product.image,
       price: product.price,
       quantity: 1, // Default jumlah
