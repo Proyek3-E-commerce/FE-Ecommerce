@@ -229,13 +229,14 @@
             const userId = JSON.parse(atob(token.split(".")[1])).user_id;
         
             try {
-                const response = await fetch(`http://localhost:3000/payment?user_id=${userId}`, {
+                const response = await fetch(`http://localhost:3000/payment`, { // ✅ user_id dikirim dalam body
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                         Authorization: `Bearer ${token}`, // Tambahkan header Authorization jika diperlukan
                     },
                     body: JSON.stringify({
+                        user_id: userId,  // ✅ user_id dikirim dalam body JSON
                         shipping: shippingAddress,
                         amount: totalAmount,
                         items: cartItems.map((item) => ({
@@ -245,6 +246,7 @@
                         })),
                     }),
                 });
+                
         
                 if (!response.ok) {
                     const errorData = await response.json();
