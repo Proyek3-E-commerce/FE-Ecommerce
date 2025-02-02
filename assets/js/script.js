@@ -103,9 +103,9 @@ addEventOnElem(window, "scroll", scrollReveal);
  * Login validation and redirection based on role
  */
 function validateLogin(event) {
-  event.preventDefault(); // Mencegah refresh halaman
+  event.preventDefault(); // Prevent form refresh
 
-  // Ambil nilai input dari form
+  // Get input values from form
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
@@ -114,7 +114,7 @@ function validateLogin(event) {
     return;
   }
 
-  // Kirim permintaan login
+  // Send login request
   fetch("http://localhost:3000/login", {
     method: "POST",
     headers: {
@@ -123,21 +123,22 @@ function validateLogin(event) {
     body: JSON.stringify({ email, password }),
   })
     .then((response) => {
-      console.log("Response status:", response.status); // Debug respons
+      console.log("Response status:", response.status); // Debug response status
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      return response.json(); // Parsing respons JSON
+      return response.json(); // Parse response JSON
     })
     .then((data) => {
-      console.log("Respons dari backend:", data); // Debug data
+      console.log("Response from backend:", data); // Debug data
 
       if (data.status === "success") {
-        localStorage.setItem("token", data.token); // Simpan token di localStorage
-        localStorage.setItem("user_id", data.user_id);
-        localStorage.setItem("role", data.role);
+        localStorage.setItem("token", data.token); // Save token in localStorage
+        localStorage.setItem("user_id", data.user_id); // Save user_id in localStorage
+        localStorage.setItem("role", data.role); // Save role in localStorage
+        localStorage.setItem("seller_id", data.seller_id); // Save seller_id in localStorage
 
-        // Redirect berdasarkan role
+        // Redirect based on role
         if (data.role === "admin") {
           window.location.href = "admin-dashboard/index.html";
         } else if (data.role === "seller") {
@@ -145,24 +146,28 @@ function validateLogin(event) {
         } else {
           window.location.href = "index.html";
         }
+
+        // Check role after DOM is loaded
         document.addEventListener("DOMContentLoaded", () => {
           const role = localStorage.getItem("role");
           if (role !== "customer") {
             alert("You must be logged in as a customer to access this page.");
-            window.location.href = "login.html"; // Redirect ke halaman login
+            window.location.href = "login.html"; // Redirect to login page
           }
-        })        
+        });
       } else {
-        alert("Login gagal: " + data.message);
+        alert("Login failed: " + data.message);
       }
     })
     .catch((error) => {
-      console.error("Terjadi kesalahan:", error); // Debug error
-      alert("Login gagal. Silakan coba lagi.");
+      console.error("An error occurred:", error); // Debug error
+      alert("Login failed. Please try again.");
     });
+
   console.log("Email:", email);
   console.log("Password:", password);
 }
+
 
 /**
  * Registration validation

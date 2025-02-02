@@ -208,7 +208,7 @@
         
 
         const processPayment = async () => {
-            const token = localStorage.getItem("token"); // Ambil token dari localStorage
+            const token = localStorage.getItem("token"); 
             if (!token) {
                 alert("Please log in to proceed with payment.");
                 return;
@@ -229,24 +229,25 @@
             const userId = JSON.parse(atob(token.split(".")[1])).user_id;
         
             try {
-                const response = await fetch(`http://localhost:3000/payment`, { // ✅ user_id dikirim dalam body
+                const response = await fetch(`http://localhost:3000/payment`, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        Authorization: `Bearer ${token}`, // Tambahkan header Authorization jika diperlukan
+                        Authorization: `Bearer ${token}`, 
                     },
                     body: JSON.stringify({
-                        user_id: userId,  // ✅ user_id dikirim dalam body JSON
+                        user_id: userId,
                         shipping: shippingAddress,
                         amount: totalAmount,
+                        shipping_cost: shippingCost,
                         items: cartItems.map((item) => ({
                             name: item.name,
                             quantity: item.quantity,
                             price: item.price,
+                            product_id: item.product_id,  // ✅ Fix! Pastikan `product_id` dikirim
                         })),
                     }),
                 });
-                
         
                 if (!response.ok) {
                     const errorData = await response.json();
@@ -254,7 +255,7 @@
                 }
         
                 const result = await response.json();
-                window.location.href = result.redirect_url;
+                window.location.href = result.redirect_url; // ✅ Redirect ke Midtrans
             } catch (error) {
                 alert("Payment failed: " + error.message);
             }

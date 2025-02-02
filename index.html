@@ -163,48 +163,57 @@
 </a>
 
 <script>
-  document.addEventListener("DOMContentLoaded", async () => {
+  document.addEventListener("DOMContentLoaded", () => {
     const sellerButton = document.getElementById("seller-button");
-    const token = localStorage.getItem("token");
 
-    if (!token) {
-      // Jika tidak login, arahkan ke halaman form menjadi seller
-      sellerButton.setAttribute("href", "become.html");
-      return;
-    }
+    sellerButton.addEventListener("click", async (event) => {
+      event.preventDefault(); // Mencegah default action dari tombol
 
-    try {
-      // Decode token untuk mendapatkan user_id
-      const decoded = JSON.parse(atob(token.split(".")[1]));
-      const userId = decoded.user_id;
-
-      // Periksa status pengguna dari backend
-      const response = await fetch(`http://localhost:3000/users/${userId}`);
-      if (!response.ok) {
-        throw new Error("Failed to fetch user data");
+      const token = localStorage.getItem("token");
+      if (!token) {
+        // Jika pengguna belum login, tampilkan popup dan arahkan ke login.html
+        alert("You must log in first to become a seller.");
+        window.location.href = "login.html";
+        return;
       }
 
-      const data = await response.json();
-      const roles = data.data.roles; // Ambil roles dari respons backend
+      try {
+        const decoded = JSON.parse(atob(token.split(".")[1]));
+        const userId = decoded.user_id;
 
-      if (roles.includes("seller")) {
-        // Jika role pengguna mencakup 'seller', arahkan ke dashboard seller
-        sellerButton.setAttribute("href", "penjual-dashboard/index.html");
-      } else {
-        // Jika bukan seller, arahkan ke halaman form menjadi seller
-        sellerButton.setAttribute("href", "become.html");
+        const response = await fetch(`http://localhost:3000/users/${userId}`);
+        if (!response.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const data = await response.json();
+        const roles = data.data.roles;
+        const storeStatus = data.data.store_status;
+
+        if (roles.includes("seller")) {
+          if (storeStatus === "pending") {
+            // Jika masih dalam review
+            alert("Your store registration is under review. Please wait for approval.");
+          } else if (storeStatus === "approved") {
+            // Jika sudah disetujui, arahkan ke dashboard seller
+            window.location.href = "penjual-dashboard/index.html";
+          } else if (storeStatus === "rejected") {
+            // Jika ditolak, tampilkan popup dan arahkan ke halaman utama
+            alert("Your store registration has been rejected. You will be redirected to the home page.");
+            window.location.href = "index.html";
+          }
+        } else {
+          // Jika belum jadi seller, arahkan ke halaman form pendaftaran seller
+          window.location.href = "become.html";
+        }
+      } catch (error) {
+        console.error("Error checking user roles:", error.message);
+        window.location.href = "become.html";
       }
-    } catch (error) {
-      console.error("Error checking user roles:", error.message);
-      // Jika terjadi kesalahan, default ke halaman form menjadi seller
-      sellerButton.setAttribute("href", "become.html");
-    }
+    });
   });
-</script>
-
-          
+</script>               
           </div>
-
           <nav class="navbar">
             <ul class="navbar-list">
               <li>
@@ -493,7 +502,7 @@
                           price * (1 - discount / 100)
                         ).toLocaleString()}</span>
                       </div>
-                      <h3><a href="ProductPage/index.html?productId=${product.id}" class="card-title">${name}</a></h3>
+                      <h3><a href="ProductPage/index.html?productId=${product._id}" class="card-title">${name}</a></h3>
                     </div>
                   </div>
                 </li>
@@ -528,7 +537,7 @@ const addToCart = async (product) => {
 
     const body = {
       user_id: userId,
-      product_id: product.id,
+      product_id: product._id,
       image: product.image,
       price: product.price,
       quantity: 1,
