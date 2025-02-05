@@ -295,9 +295,9 @@
     </div>
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        const apiUrl = "http://localhost:3000/sellers";
-        const approveUrl = "http://localhost:3000/admin/approve-seller";
-        const rejectUrl = "http://localhost:3000/admin/reject-seller";
+        const apiUrl = "https://tefae-commerce-2c0fdca4d608.herokuapp.com/sellers";
+        const approveUrl = "https://tefae-commerce-2c0fdca4d608.herokuapp.com/admin/approve-seller";
+        const rejectUrl = "https://tefae-commerce-2c0fdca4d608.herokuapp.com/admin/reject-seller";
         const sellerTable = document.querySelector("#seller-table tbody");
         const sellerForm = document.getElementById("seller-form");
         const editModal = document.getElementById("edit-modal");
@@ -346,7 +346,7 @@ function renderSellers(users) {
 
       // Tentukan URL gambar
       const photoUrl = user.store_info?.photo_path
-        ? `http://localhost:3000/${user.store_info.photo_path.replace(/\\/g, "/")}`
+        ? `https://tefae-commerce-2c0fdca4d608.herokuapp.com/${user.store_info.photo_path.replace(/\\/g, "/")}`
         : "./images/default-photo.png"; // Gambar default jika tidak ada foto
 
       return `

@@ -480,9 +480,9 @@
 
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        const apiUrl = "http://localhost:3000/products";
-        const sellersUrl = "http://localhost:3000/sellers";
-        const categoriesUrl = "http://localhost:3000/categories";
+        const apiUrl = "https://tefae-commerce-2c0fdca4d608.herokuapp.com/products";
+        const sellersUrl = "https://tefae-commerce-2c0fdca4d608.herokuapp.com/sellers";
+        const categoriesUrl = "https://tefae-commerce-2c0fdca4d608.herokuapp.com/categories";
         const productTable = document.querySelector("#product-table tbody");
         const productForm = document.getElementById("product-form");
         const storeSelect = document.getElementById("store-select");
@@ -587,7 +587,7 @@
                   )?.name || "Unknown Sub-Category";
 
                 const imageUrl = product.image
-                  ? `http://localhost:3000/${product.image.replace("./", "")}`
+                  ? `https://tefae-commerce-2c0fdca4d608.herokuapp.com/${product.image.replace("./", "")}`
                   : "./images/default-product.png";
 
                 return `
@@ -689,7 +689,7 @@
             try {
               // Fetch product details
               const response = await fetch(
-                `http://localhost:3000/products/${productId}`
+                `https://tefae-commerce-2c0fdca4d608.herokuapp.com/products/${productId}`
               );
               const { product, store } = await response.json();
       
@@ -713,7 +713,7 @@
       
               // Set image preview
               if (product.image) {
-                editImagePreview.src = `http://localhost:3000/${product.image.replace("./", "")}`;
+                editImagePreview.src = `https://tefae-commerce-2c0fdca4d608.herokuapp.com/${product.image.replace("./", "")}`;
                 editImagePreview.classList.remove("hidden");
               }
       
@@ -730,7 +730,7 @@
         async function populateCategoryDropdown(selectedCategoryId, selectedSubCategoryId) {
           try {
             const categoryResponse = await fetch(
-              "http://localhost:3000/categories"
+              "https://tefae-commerce-2c0fdca4d608.herokuapp.com/categories"
             );
             const { data: categories } = await categoryResponse.json();
       
@@ -807,7 +807,7 @@
       
           try {
             const response = await fetch(
-              `http://localhost:3000/products/${productId}`,
+              `https://tefae-commerce-2c0fdca4d608.herokuapp.com/products/${productId}`,
               {
                 method: "PUT",
                 body: formData,

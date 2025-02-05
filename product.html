@@ -141,7 +141,7 @@ async function fetchProducts(url, containerId) {
     container.innerHTML = products
       .map((product) => {
         const imageUrl = product.image
-          ? `http://localhost:3000/${product.image.replace("./", "")}`
+          ? `https://tefae-commerce-2c0fdca4d608.herokuapp.com/${product.image.replace("./", "")}`
           : "./images/default-product.png";
         const name = product.name || "Unknown Product";
         const price = product.price || 0;
@@ -223,7 +223,7 @@ const addToCart = async (product) => {
       total_price: product.price, // Total harga awal
     };
 
-    const response = await fetch("http://localhost:3000/cart", {
+    const response = await fetch("https://tefae-commerce-2c0fdca4d608.herokuapp.com/cart", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -247,7 +247,7 @@ const addToCart = async (product) => {
   }
 };
 // Panggil fungsi untuk mengambil produk
-fetchProducts("http://localhost:3000/products", "bestsellers-list");
+fetchProducts("https://tefae-commerce-2c0fdca4d608.herokuapp.com/products", "bestsellers-list");
 
  // Fungsi untuk mendapatkan jumlah produk di keranjang
  const updateCartCount = async () => {
@@ -274,7 +274,7 @@ fetchProducts("http://localhost:3000/products", "bestsellers-list");
     const userId = decodedToken.user_id;
 
     // Fetch data keranjang dari backend
-    const response = await fetch(`http://localhost:3000/cart?user_id=${userId}`);
+    const response = await fetch(`https://tefae-commerce-2c0fdca4d608.herokuapp.com/cart?user_id=${userId}`);
     if (!response.ok) {
       throw new Error(`Failed to fetch cart data: ${response.statusText}`);
     }
